@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6911711885696253"
+     crossorigin="anonymous"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Konverter Gambar: Velfile</title>
+  <meta name="description" content="Ubah gambar antara JPG, PNG, dan WebP. Berjalan di browser kamu.">
+  <meta name="theme-color" content="#f6f7f9">
+  <link rel="canonical" href="https://velfile.my.id/id/tools/converter">
+  <link rel="alternate" hreflang="en" href="https://velfile.my.id/tools/converter">
+  <link rel="alternate" hreflang="id" href="https://velfile.my.id/id/tools/converter">
+  <link rel="alternate" hreflang="x-default" href="https://velfile.my.id/tools/converter">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Konverter Gambar: Velfile">
+  <meta property="og:description" content="Ubah gambar antara JPG, PNG, dan WebP. Berjalan di browser kamu.">
+  <meta property="og:url" content="https://velfile.my.id/id/tools/converter">
+  <meta property="og:image" content="https://velfile.my.id/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" type="image/png" href="/favicon.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/css/tool.css">
+
+  <style>
+    [hidden] { display: none !important; }
+
+    /* Kotak upload */
+    @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+    .dropzone { border: 2px dashed var(--line); border-radius: 6px; min-height: 240px; padding: 28px 18px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; cursor: pointer; transition: border-color 0.2s, background 0.2s, transform 0.2s; }
+    .dropzone:hover { border-color: var(--ink); }
+    .dropzone.dragging { border-color: var(--ink); border-style: solid; background: var(--yellow-soft); transform: scale(1.015); }
+    .dz-ico { width: 46px; height: 46px; margin-bottom: 14px; animation: bob 3s ease-in-out infinite; }
+    .dropzone.dragging .dz-ico { animation: none; transform: translateY(-8px) rotate(-5deg); }
+    .dropzone strong { font-size: 18px; }
+    .dropzone p { color: var(--muted); font-size: 14px; margin-bottom: 16px; }
+    .pick { background: var(--ink); color: #fff; padding: 10px 20px; border-radius: 6px; font-size: 14px; font-weight: 600; }
+    .limits { margin-top: 14px; font-size: 13px; color: var(--muted); }
+
+    /* Pesan */
+    .msg { margin-top: 14px; padding: 12px 14px; border-radius: 6px; font-size: 14px; font-weight: 500; animation: rise 0.3s ease both; }
+    .msg:empty { display: none; }
+    .msg.error { background: var(--err-bg); color: var(--err); border: 1px solid #e3b5b1; }
+    .msg.info { background: var(--yellow-soft); border: 1px solid var(--yellow); }
+
+    /* Area kerja */
+    .preview { background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 10px; display: flex; justify-content: center; }
+    .preview img { max-width: 100%; max-height: 260px; object-fit: contain; border-radius: 3px; }
+    .file-info { margin-top: 12px; }
+    .file-name { font-weight: 600; word-break: break-word; }
+    .file-meta { color: var(--muted); font-size: 13px; }
+
+    .field { margin-top: 24px; border: 0; }
+    .field > label, .field > legend, .field-row label { font-weight: 600; font-size: 15px; }
+    .field > legend { margin-bottom: 8px; padding: 0; }
+    .field-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+    .field output { font: 800 18px/1 "Bricolage Grotesque", sans-serif; }
+    input[type="range"] { width: 100%; accent-color: var(--ink); height: 28px; }
+    input[type="range"]:disabled { opacity: 0.4; }
+    .hint { margin-top: 6px; font-size: 13px; color: var(--muted); }
+
+    /* Pilihan format */
+    .formats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .formats label { position: relative; cursor: pointer; }
+    .formats input { position: absolute; opacity: 0; inset: 0; cursor: pointer; }
+    .formats span { display: block; text-align: center; font-weight: 600; padding: 12px 8px; border: 2px solid var(--ink); border-radius: 8px; background: var(--paper); transition: background 0.2s, color 0.2s, transform 0.15s; }
+    .formats label:hover span { background: var(--yellow-soft); }
+    .formats input:checked + span { background: var(--ink); color: #fff; }
+    .formats input:focus-visible + span { outline: 3px solid var(--ink); outline-offset: 3px; }
+    .formats label:active span { transform: translateY(1px); }
+
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 26px; }
+    .stat { border: 1px solid var(--line); border-radius: 6px; padding: 12px; background: var(--bg); min-width: 0; }
+    .stat span { display: block; font-size: 12px; color: var(--muted); }
+    .stat strong { display: block; font: 800 20px/1.3 "Bricolage Grotesque", sans-serif; overflow-wrap: anywhere; }
+    .stat.saved { background: var(--yellow); border-color: var(--ink); }
+    .stat.saved span { color: var(--ink); }
+
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+    .btn.primary { flex: 1 1 180px; text-align: center; }
+    .btn.disabled { opacity: 0.4; pointer-events: none; }
+
+    @media (max-width: 520px) {
+      .stat strong { font-size: 16px; }
+    }
+  </style>
+  <meta name="twitter:image" content="https://velfile.my.id/og.png">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Konverter Gambar - Velfile",
+    "description": "Ubah gambar antara JPG, PNG, dan WebP. Berjalan di browser kamu.",
+    "url": "https://velfile.my.id/id/tools/converter",
+    "applicationCategory": "UtilitiesApplication",
+    "operatingSystem": "Any (web browser)",
+    "inLanguage": "id",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Velfile",
+      "url": "https://velfile.my.id/"
+    }
+  }
+  </script>
+</head>
+<body>
+
+  <header>
+    <div class="wrap header-inner">
+      <a href="../index.html" class="brand" aria-label="Beranda Velfile">
+        <svg viewBox="0 0 32 32" aria-hidden="true">
+          <path d="M6 3h15l6 6v20H6z" fill="#f6cf4a" stroke="#15181e" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M21 3v6h6" fill="#ffffff" stroke="#15181e" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M11 15l5 9 5-9" fill="none" stroke="#15181e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        velfile
+      </a>
+      <a href="../index.html#tools" class="back">Semua alat</a>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <section class="tool-head">
+      <h1 class="rise">Konverter Gambar</h1>
+      <p class="rise" style="--d: 0.12s">Ubah antara JPG, PNG, dan WebP.</p>
+    </section>
+
+    <section class="sheet rise" style="--d: 0.2s" id="workspace">
+
+      <!-- Tahap 1: pilih file -->
+      <div id="dropView">
+        <div class="dropzone" id="dropZone" role="button" tabindex="0" aria-label="Pilih gambar atau letakkan di sini">
+          <svg class="dz-ico" viewBox="0 0 44 44" aria-hidden="true">
+            <path d="M10 4h17l8 8v28H10z" fill="#fff" stroke="#15181e" stroke-width="2.5" stroke-linejoin="round"/>
+            <path d="M27 4v8h8" fill="#f6cf4a" stroke="#15181e" stroke-width="2.5" stroke-linejoin="round"/>
+            <path d="M22 33V21m0 0-5 5m5-5 5 5" fill="none" stroke="#15181e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <strong>Letakkan gambar di sini</strong>
+          <p>atau pilih dari perangkatmu</p>
+          <span class="pick">Pilih gambar</span>
+        </div>
+        <div class="limits">JPG, PNG, atau WEBP. Maksimal 50 MB.</div>
+      </div>
+
+      <!-- Tahap 2: pilih format dan unduh -->
+      <div id="workView" hidden>
+        <div class="preview"><img id="preview" alt="Pratinjau gambarmu"></div>
+        <div class="file-info">
+          <div class="file-name" id="fileName"></div>
+          <div class="file-meta" id="fileMeta"></div>
+        </div>
+
+        <fieldset class="field">
+          <legend>Ubah ke</legend>
+          <div class="formats">
+            <label><input type="radio" name="fmt" value="image/jpeg"><span>JPG</span></label>
+            <label><input type="radio" name="fmt" value="image/png"><span>PNG</span></label>
+            <label><input type="radio" name="fmt" value="image/webp"><span>WebP</span></label>
+          </div>
+        </fieldset>
+
+        <div class="field">
+          <div class="field-row">
+            <label for="quality">Kualitas</label>
+            <output id="qualityValue" for="quality">90%</output>
+          </div>
+          <input type="range" id="quality" min="10" max="100" step="5" value="90">
+          <div class="hint" id="qualityHint">Kualitas lebih tinggi menjaga lebih banyak detail tapi file lebih besar.</div>
+        </div>
+
+        <div class="stats">
+          <div class="stat"><span>Dari</span><strong id="fromFmt">-</strong></div>
+          <div class="stat"><span>Ke</span><strong id="toFmt">-</strong></div>
+          <div class="stat saved"><span>Ukuran file</span><strong id="sizeAfter">-</strong></div>
+        </div>
+
+        <div class="actions">
+          <a class="btn primary disabled" id="downloadBtn" download>Unduh</a>
+          <button class="btn" id="resetBtn" type="button">Pilih gambar lain</button>
+        </div>
+      </div>
+
+      <div class="msg" id="msg" role="status" aria-live="polite"></div>
+      <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp" hidden>
+    </section>
+
+    <section class="guide">
+      <h2>Cara mengonversi gambar</h2>
+      <ol class="how">
+        <li>Pilih gambar.</li>
+        <li>Ketuk JPG, PNG, atau WebP di bawah Ubah ke. Hasilnya langsung diperbarui.</li>
+        <li>Tekan Unduh.</li>
+      </ol>
+
+      <h2>Pertanyaan umum</h2>
+      <div class="qa">
+        <details><summary>Format mana yang sebaiknya dipilih?</summary><p>JPG paling cocok untuk foto, PNG untuk logo dan tangkapan layar yang tajam atau transparan, dan WebP adalah format modern yang biasanya lebih kecil.</p></details>
+        <details><summary>Bagaimana dengan area transparan?</summary><p>JPG tidak mendukung transparansi, jadi area transparan menjadi putih.</p></details>
+        <details><summary>Apakah gambar saya diunggah?</summary><p>Tidak. Gambar diproses di browser di perangkatmu dan tidak dikirim ke server.</p></details>
+      </div>
+
+      <h2>Alat lain</h2>
+      <ul class="related">
+        <li><a href="compress.html">Kompres Gambar</a></li>
+        <li><a href="resize.html">Ubah Ukuran Gambar</a></li>
+        <li><a href="jpg-to-pdf.html">JPG ke PDF</a></li>
+      </ul>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="wrap footer-inner">
+      <span>Alat file, tanpa ribet.</span>
+      <span style="display:flex;gap:20px;flex-wrap:wrap;"><a href="../about.html">Tentang</a><a href="../privacy.html">Privasi</a><a href="../contact.html">Kontak</a><a href="../../tools/converter.html">English</a><a href="../index.html">velfile</a></span>
+    </div>
+  </footer>
+
+  <script src="/js/handoff.js"></script>
+  <script>
+    const MAX_SIZE = 50 * 1024 * 1024;
+    const TYPES = ["image/jpeg", "image/png", "image/webp"];
+    const EXT = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp" };
+    const LABEL = { "image/jpeg": "JPG", "image/png": "PNG", "image/webp": "WebP" };
+
+    const $ = (id) => document.getElementById(id);
+    const dropView = $("dropView"), workView = $("workView");
+    const zone = $("dropZone"), input = $("fileInput"), msg = $("msg");
+    const quality = $("quality"), qualityValue = $("qualityValue"), qualityHint = $("qualityHint");
+    const downloadBtn = $("downloadBtn");
+    const radios = Array.from(document.querySelectorAll('input[name="fmt"]'));
+
+    let current = null;     // { file, img, url }
+    let outUrl = null;
+    let runId = 0;
+    let timer = null;
+
+    /* ---------- Pilih file ---------- */
+    zone.addEventListener("click", () => input.click());
+    zone.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); input.click(); }
+    });
+    input.addEventListener("change", () => {
+      const files = Array.from(input.files);
+      input.value = "";
+      pickFile(files);
+    });
+    zone.addEventListener("dragover", (e) => { e.preventDefault(); zone.classList.add("dragging"); });
+    zone.addEventListener("dragleave", () => zone.classList.remove("dragging"));
+    zone.addEventListener("drop", (e) => {
+      e.preventDefault();
+      zone.classList.remove("dragging");
+      pickFile(Array.from(e.dataTransfer.files));
+    });
+
+    function showMsg(text, kind) {
+      msg.className = "msg " + (kind || "info");
+      msg.textContent = text;
+    }
+    function clearMsg() { msg.className = "msg"; msg.textContent = ""; }
+
+    function pickFile(files) {
+      if (!files.length) return;
+      const file = files.find((f) => TYPES.includes(f.type));
+      if (!file) return showMsg("Konverter Gambar hanya bisa untuk gambar JPG, PNG, dan WEBP.", "error");
+      if (file.size > MAX_SIZE) return showMsg(file.name + " lebih besar dari 50 MB. Pilih gambar yang lebih kecil.", "error");
+      loadFile(file, files.length > 1);
+    }
+
+    function loadFile(file, hadMore) {
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => {
+        resetCurrent();
+        current = { file, img, url };
+        $("preview").src = url;
+        $("fileName").textContent = file.name;
+        $("fileMeta").textContent = LABEL[file.type] + ", " + img.naturalWidth + " x " + img.naturalHeight + " px, " + formatBytes(file.size);
+        $("fromFmt").textContent = LABEL[file.type];
+
+        // Format awal: WebP, kecuali gambarnya sudah WebP (maka JPG)
+        const start = file.type === "image/webp" ? "image/jpeg" : "image/webp";
+        radios.forEach((r) => { r.checked = r.value === start; });
+
+        dropView.hidden = true;
+        workView.hidden = false;
+        if (hadMore) showMsg("Hanya gambar pertama yang dipakai.", "info"); else clearMsg();
+        convert();
+      };
+      img.onerror = () => {
+        URL.revokeObjectURL(url);
+        showMsg("Gambar ini tidak bisa dibaca. Coba file lain.", "error");
+      };
+      img.src = url;
+    }
+
+    function resetCurrent() {
+      if (current) URL.revokeObjectURL(current.url);
+      if (outUrl) URL.revokeObjectURL(outUrl);
+      current = null;
+      outUrl = null;
+    }
+
+    $("resetBtn").addEventListener("click", () => {
+      runId++;
+      resetCurrent();
+      workView.hidden = true;
+      dropView.hidden = false;
+      downloadBtn.classList.add("disabled");
+      clearMsg();
+    });
+
+    /* ---------- Konversi ---------- */
+    radios.forEach((r) => r.addEventListener("change", () => convert()));
+    quality.addEventListener("input", () => {
+      qualityValue.textContent = quality.value + "%";
+      clearTimeout(timer);
+      timer = setTimeout(convert, 250);
+    });
+
+    function selectedType() {
+      const r = radios.find((x) => x.checked);
+      return r ? r.value : "image/webp";
+    }
+
+    function convert() {
+      if (!current) return;
+      const id = ++runId;
+      const { file, img } = current;
+      const outType = selectedType();
+
+      const lossless = outType === "image/png";
+      quality.disabled = lossless;
+      qualityHint.textContent = lossless
+        ? "PNG tidak menurunkan kualitas, jadi tidak ada pengaturan kualitas."
+        : "Kualitas lebih tinggi menjaga lebih banyak detail tapi file lebih besar.";
+      $("toFmt").textContent = LABEL[outType];
+
+      const canvas = document.createElement("canvas");
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      const ctx = canvas.getContext("2d");
+      if (outType === "image/jpeg") {
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      }
+      ctx.drawImage(img, 0, 0);
+
+      canvas.toBlob((blob) => {
+        if (id !== runId || !current) return;
+        if (!blob) return showMsg("Browsermu tidak bisa mengonversi gambar ini.", "error");
+
+        if (outUrl) URL.revokeObjectURL(outUrl);
+        outUrl = URL.createObjectURL(blob);
+
+        const base = file.name.replace(/\.[^.]+$/, "");
+        downloadBtn.href = outUrl;
+        downloadBtn.download = base + "." + (EXT[blob.type] || "jpg");
+        downloadBtn.classList.remove("disabled");
+        $("sizeAfter").textContent = formatBytes(blob.size);
+
+        if (blob.type !== outType) {
+          showMsg("Browsermu menyimpannya dalam format " + LABEL[blob.type] + ". Coba format lain.", "info");
+        } else if (outType === file.type) {
+          showMsg("Formatnya sama dengan aslinya. Pilih format lain untuk mengonversi.", "info");
+        } else if (outType === "image/jpeg" && file.type !== "image/jpeg") {
+          showMsg("JPG tidak mendukung transparansi, jadi area transparan menjadi putih.", "info");
+        } else {
+          clearMsg();
+        }
+      }, outType, quality.value / 100);
+    }
+
+    function formatBytes(bytes) {
+      if (bytes === 0) return "0 B";
+      const units = ["B", "KB", "MB", "GB"];
+      const i = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1);
+      return parseFloat((bytes / Math.pow(1024, i)).toFixed(1)) + " " + units[i];
+    }
+
+    /* ---------- File kiriman dari halaman utama ---------- */
+    if (window.VelfileHandoff) {
+      VelfileHandoff.take().then((files) => {
+        if (files && files.length) pickFile(files);
+      });
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6911711885696253"
+     crossorigin="anonymous"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ubah Ukuran Gambar: Velfile</title>
+  <meta name="description" content="Ubah lebar dan tinggi gambar, dengan rasio aspek yang bisa dikunci. Berjalan di browser kamu.">
+  <meta name="theme-color" content="#f6f7f9">
+  <link rel="canonical" href="https://velfile.my.id/id/tools/resize">
+  <link rel="alternate" hreflang="en" href="https://velfile.my.id/tools/resize">
+  <link rel="alternate" hreflang="id" href="https://velfile.my.id/id/tools/resize">
+  <link rel="alternate" hreflang="x-default" href="https://velfile.my.id/tools/resize">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Ubah Ukuran Gambar: Velfile">
+  <meta property="og:description" content="Ubah lebar dan tinggi gambar, dengan rasio aspek yang bisa dikunci. Berjalan di browser kamu.">
+  <meta property="og:url" content="https://velfile.my.id/id/tools/resize">
+  <meta property="og:image" content="https://velfile.my.id/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" type="image/png" href="/favicon.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/css/tool.css">
+
+  <style>
+    [hidden] { display: none !important; }
+
+    /* Kotak upload */
+    @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+    .dropzone { border: 2px dashed var(--line); border-radius: 6px; min-height: 240px; padding: 28px 18px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; cursor: pointer; transition: border-color 0.2s, background 0.2s, transform 0.2s; }
+    .dropzone:hover { border-color: var(--ink); }
+    .dropzone.dragging { border-color: var(--ink); border-style: solid; background: var(--yellow-soft); transform: scale(1.015); }
+    .dz-ico { width: 46px; height: 46px; margin-bottom: 14px; animation: bob 3s ease-in-out infinite; }
+    .dropzone.dragging .dz-ico { animation: none; transform: translateY(-8px) rotate(-5deg); }
+    .dropzone strong { font-size: 18px; }
+    .dropzone p { color: var(--muted); font-size: 14px; margin-bottom: 16px; }
+    .pick { background: var(--ink); color: #fff; padding: 10px 20px; border-radius: 6px; font-size: 14px; font-weight: 600; }
+    .limits { margin-top: 14px; font-size: 13px; color: var(--muted); }
+
+    /* Pesan */
+    .msg { margin-top: 14px; padding: 12px 14px; border-radius: 6px; font-size: 14px; font-weight: 500; animation: rise 0.3s ease both; }
+    .msg:empty { display: none; }
+    .msg.error { background: var(--err-bg); color: var(--err); border: 1px solid #e3b5b1; }
+    .msg.info { background: var(--yellow-soft); border: 1px solid var(--yellow); }
+
+    /* Area kerja */
+    .preview { background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 10px; display: flex; justify-content: center; }
+    .preview img { max-width: 100%; max-height: 260px; object-fit: contain; border-radius: 3px; }
+    .file-info { margin-top: 12px; }
+    .file-name { font-weight: 600; word-break: break-word; }
+    .file-meta { color: var(--muted); font-size: 13px; }
+
+    .field { margin-top: 24px; }
+    .field > label, .field-title { display: block; font-weight: 600; font-size: 15px; margin-bottom: 8px; }
+    .dims { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .dims label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 4px; }
+    input[type="number"], select { width: 100%; font: inherit; font-size: 16px; padding: 11px 12px; border: 2px solid var(--ink); border-radius: 8px; background: var(--paper); color: var(--ink); }
+    input[type="number"]:invalid { border-color: var(--err); }
+    .lock { display: flex; align-items: center; gap: 10px; margin-top: 14px; font-size: 15px; cursor: pointer; }
+    .lock input { width: 20px; height: 20px; accent-color: var(--ink); cursor: pointer; }
+    .presets { display: flex; flex-wrap: wrap; gap: 8px; }
+    .presets .btn { padding: 8px 14px; font-size: 14px; }
+    .hint { margin-top: 6px; font-size: 13px; color: var(--muted); }
+
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 26px; }
+    .stat { border: 1px solid var(--line); border-radius: 6px; padding: 12px; background: var(--bg); min-width: 0; }
+    .stat span { display: block; font-size: 12px; color: var(--muted); }
+    .stat strong { display: block; font: 800 18px/1.3 "Bricolage Grotesque", sans-serif; overflow-wrap: anywhere; }
+    .stat.saved { background: var(--yellow); border-color: var(--ink); }
+    .stat.saved span { color: var(--ink); }
+
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+    .btn.primary { flex: 1 1 180px; text-align: center; }
+    .btn.disabled { opacity: 0.4; pointer-events: none; }
+
+    @media (max-width: 520px) {
+      .stat strong { font-size: 15px; }
+    }
+  </style>
+  <meta name="twitter:image" content="https://velfile.my.id/og.png">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Ubah Ukuran Gambar - Velfile",
+    "description": "Ubah lebar dan tinggi gambar, dengan rasio aspek yang bisa dikunci. Berjalan di browser kamu.",
+    "url": "https://velfile.my.id/id/tools/resize",
+    "applicationCategory": "UtilitiesApplication",
+    "operatingSystem": "Any (web browser)",
+    "inLanguage": "id",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Velfile",
+      "url": "https://velfile.my.id/"
+    }
+  }
+  </script>
+</head>
+<body>
+
+  <header>
+    <div class="wrap header-inner">
+      <a href="../index.html" class="brand" aria-label="Beranda Velfile">
+        <svg viewBox="0 0 32 32" aria-hidden="true">
+          <path d="M6 3h15l6 6v20H6z" fill="#f6cf4a" stroke="#15181e" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M21 3v6h6" fill="#ffffff" stroke="#15181e" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M11 15l5 9 5-9" fill="none" stroke="#15181e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        velfile
+      </a>
+      <a href="../index.html#tools" class="back">Semua alat</a>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <section class="tool-head">
+      <h1 class="rise">Ubah Ukuran Gambar</h1>
+      <p class="rise" style="--d: 0.12s">Atur lebar dan tinggi baru, dengan rasio yang bisa dikunci.</p>
+    </section>
+
+    <section class="sheet rise" style="--d: 0.2s" id="workspace">
+
+      <!-- Tahap 1: pilih file -->
+      <div id="dropView">
+        <div class="dropzone" id="dropZone" role="button" tabindex="0" aria-label="Pilih gambar atau letakkan di sini">
+          <svg class="dz-ico" viewBox="0 0 44 44" aria-hidden="true">
+            <path d="M10 4h17l8 8v28H10z" fill="#fff" stroke="#15181e" stroke-width="2.5" stroke-linejoin="round"/>
+            <path d="M27 4v8h8" fill="#f6cf4a" stroke="#15181e" stroke-width="2.5" stroke-linejoin="round"/>
+            <path d="M22 33V21m0 0-5 5m5-5 5 5" fill="none" stroke="#15181e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <strong>Letakkan gambar di sini</strong>
+          <p>atau pilih dari perangkatmu</p>
+          <span class="pick">Pilih gambar</span>
+        </div>
+        <div class="limits">JPG, PNG, atau WEBP. Maksimal 50 MB.</div>
+      </div>
+
+      <!-- Tahap 2: atur ukuran dan unduh -->
+      <div id="workView" hidden>
+        <div class="preview"><img id="preview" alt="Pratinjau gambarmu"></div>
+        <div class="file-info">
+          <div class="file-name" id="fileName"></div>
+          <div class="file-meta" id="fileMeta"></div>
+        </div>
+
+        <div class="field">
+          <span class="field-title">Ukuran dalam piksel</span>
+          <div class="dims">
+            <div>
+              <label for="widthInput">Lebar</label>
+              <input type="number" id="widthInput" min="1" max="8000" step="1" inputmode="numeric">
+            </div>
+            <div>
+              <label for="heightInput">Tinggi</label>
+              <input type="number" id="heightInput" min="1" max="8000" step="1" inputmode="numeric">
+            </div>
+          </div>
+          <label class="lock">
+            <input type="checkbox" id="lockRatio" checked>
+            Kunci rasio aspek
+          </label>
+        </div>
+
+        <div class="field">
+          <span class="field-title">Skala cepat</span>
+          <div class="presets">
+            <button class="btn" type="button" data-scale="1">Asli</button>
+            <button class="btn" type="button" data-scale="0.75">75%</button>
+            <button class="btn" type="button" data-scale="0.5">50%</button>
+            <button class="btn" type="button" data-scale="0.25">25%</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="format">Simpan sebagai</label>
+          <select id="format">
+            <option value="same">Sama seperti aslinya</option>
+            <option value="image/jpeg">JPG</option>
+            <option value="image/png">PNG</option>
+            <option value="image/webp">WebP</option>
+          </select>
+          <div class="hint">Ukuran maksimal 8000 px di tiap sisi.</div>
+        </div>
+
+        <div class="stats">
+          <div class="stat"><span>Asli</span><strong id="dimBefore">-</strong></div>
+          <div class="stat"><span>Ukuran baru</span><strong id="dimAfter">-</strong></div>
+          <div class="stat saved"><span>Ukuran file</span><strong id="fileSizeAfter">-</strong></div>
+        </div>
+
+        <div class="actions">
+          <a class="btn primary disabled" id="downloadBtn" download>Unduh</a>
+          <button class="btn" id="resetBtn" type="button">Pilih gambar lain</button>
+        </div>
+      </div>
+
+      <div class="msg" id="msg" role="status" aria-live="polite"></div>
+      <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp" hidden>
+    </section>
+
+    <section class="guide">
+      <h2>Cara mengubah ukuran gambar</h2>
+      <ol class="how">
+        <li>Pilih gambar, atau letakkan di kotak.</li>
+        <li>Ketik lebar atau tinggi baru. Kalau Kunci rasio aspek aktif, sisi lainnya ikut menyesuaikan. Atau ketuk skala cepat seperti 50%.</li>
+        <li>Tekan Unduh.</li>
+      </ol>
+
+      <h2>Pertanyaan umum</h2>
+      <div class="qa">
+        <details><summary>Apakah mengubah ukuran memperkecil file?</summary><p>Biasanya ya, karena piksel yang lebih sedikit berarti data yang lebih sedikit. Untuk file sekecil mungkin, pakai juga Kompres Gambar.</p></details>
+        <details><summary>Kenapa gambar yang diperbesar jadi buram?</summary><p>Memperbesar gambar melebihi aslinya tidak menambah detail, jadi hasilnya bisa terlihat lembek. Sebisa mungkin perkecil saja.</p></details>
+        <details><summary>Berapa ukuran maksimalnya?</summary><p>8000 piksel di tiap sisi.</p></details>
+      </div>
+
+      <h2>Alat lain</h2>
+      <ul class="related">
+        <li><a href="compress.html">Kompres Gambar</a></li>
+        <li><a href="crop.html">Potong Gambar</a></li>
+        <li><a href="converter.html">Konverter Gambar</a></li>
+      </ul>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="wrap footer-inner">
+      <span>Alat file, tanpa ribet.</span>
+      <span style="display:flex;gap:20px;flex-wrap:wrap;"><a href="../about.html">Tentang</a><a href="../privacy.html">Privasi</a><a href="../contact.html">Kontak</a><a href="../../tools/resize.html">English</a><a href="../index.html">velfile</a></span>
+    </div>
+  </footer>
+
+  <script src="/js/handoff.js"></script>
+  <script>
+    const MAX_SIZE = 50 * 1024 * 1024;
+    const MAX_SIDE = 8000;
+    const QUALITY = 0.92;
+    const TYPES = ["image/jpeg", "image/png", "image/webp"];
+    const EXT = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp" };
+
+    const $ = (id) => document.getElementById(id);
+    const dropView = $("dropView"), workView = $("workView");
+    const zone = $("dropZone"), input = $("fileInput"), msg = $("msg");
+    const wInput = $("widthInput"), hInput = $("heightInput"), lock = $("lockRatio");
+    const format = $("format"), downloadBtn = $("downloadBtn");
+
+    let current = null;     // { file, img, url, ratio }
+    let outUrl = null;
+    let runId = 0;
+    let timer = null;
+
+    /* ---------- Pilih file ---------- */
+    zone.addEventListener("click", () => input.click());
+    zone.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); input.click(); }
+    });
+    input.addEventListener("change", () => {
+      const files = Array.from(input.files);
+      input.value = "";
+      pickFile(files);
+    });
+    zone.addEventListener("dragover", (e) => { e.preventDefault(); zone.classList.add("dragging"); });
+    zone.addEventListener("dragleave", () => zone.classList.remove("dragging"));
+    zone.addEventListener("drop", (e) => {
+      e.preventDefault();
+      zone.classList.remove("dragging");
+      pickFile(Array.from(e.dataTransfer.files));
+    });
+
+    function showMsg(text, kind) {
+      msg.className = "msg " + (kind || "info");
+      msg.textContent = text;
+    }
+    function clearMsg() { msg.className = "msg"; msg.textContent = ""; }
+
+    function pickFile(files) {
+      if (!files.length) return;
+      const file = files.find((f) => TYPES.includes(f.type));
+      if (!file) return showMsg("Ubah Ukuran Gambar hanya bisa untuk gambar JPG, PNG, dan WEBP.", "error");
+      if (file.size > MAX_SIZE) return showMsg(file.name + " lebih besar dari 50 MB. Pilih gambar yang lebih kecil.", "error");
+      loadFile(file, files.length > 1);
+    }
+
+    function loadFile(file, hadMore) {
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => {
+        resetCurrent();
+        const w = img.naturalWidth, h = img.naturalHeight;
+        current = { file, img, url, ratio: w / h };
+        $("preview").src = url;
+        $("fileName").textContent = file.name;
+        $("fileMeta").textContent = file.type.split("/")[1].toUpperCase() + ", " + formatBytes(file.size);
+        $("dimBefore").textContent = w + " x " + h;
+        wInput.value = Math.min(w, MAX_SIDE);
+        hInput.value = Math.round(wInput.value / current.ratio);
+        format.value = "same";
+        lock.checked = true;
+        dropView.hidden = true;
+        workView.hidden = false;
+        if (hadMore) showMsg("Hanya gambar pertama yang dipakai.", "info"); else clearMsg();
+        render();
+      };
+      img.onerror = () => {
+        URL.revokeObjectURL(url);
+        showMsg("Gambar ini tidak bisa dibaca. Coba file lain.", "error");
+      };
+      img.src = url;
+    }
+
+    function resetCurrent() {
+      if (current) URL.revokeObjectURL(current.url);
+      if (outUrl) URL.revokeObjectURL(outUrl);
+      current = null;
+      outUrl = null;
+    }
+
+    $("resetBtn").addEventListener("click", () => {
+      runId++;
+      resetCurrent();
+      workView.hidden = true;
+      dropView.hidden = false;
+      downloadBtn.classList.add("disabled");
+      clearMsg();
+    });
+
+    /* ---------- Ukuran ---------- */
+    wInput.addEventListener("input", () => {
+      const w = parseInt(wInput.value, 10);
+      if (lock.checked && w > 0) hInput.value = Math.max(1, Math.round(w / current.ratio));
+      schedule();
+    });
+    hInput.addEventListener("input", () => {
+      const h = parseInt(hInput.value, 10);
+      if (lock.checked && h > 0) wInput.value = Math.max(1, Math.round(h * current.ratio));
+      schedule();
+    });
+    lock.addEventListener("change", () => {
+      if (lock.checked) {
+        const w = parseInt(wInput.value, 10);
+        if (w > 0) hInput.value = Math.max(1, Math.round(w / current.ratio));
+      }
+      schedule();
+    });
+    format.addEventListener("change", () => render());
+
+    document.querySelectorAll("[data-scale]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        if (!current) return;
+        const s = parseFloat(btn.dataset.scale);
+        wInput.value = Math.max(1, Math.min(MAX_SIDE, Math.round(current.img.naturalWidth * s)));
+        hInput.value = Math.max(1, Math.min(MAX_SIDE, Math.round(current.img.naturalHeight * s)));
+        render();
+      });
+    });
+
+    function schedule() {
+      clearTimeout(timer);
+      timer = setTimeout(render, 250);
+    }
+
+    function invalid(text) {
+      runId++;
+      downloadBtn.classList.add("disabled");
+      $("dimAfter").textContent = "-";
+      $("fileSizeAfter").textContent = "-";
+      showMsg(text, "error");
+    }
+
+    /* ---------- Buat gambar baru ---------- */
+    function render() {
+      if (!current) return;
+      const w = parseInt(wInput.value, 10);
+      const h = parseInt(hInput.value, 10);
+
+      if (!(w >= 1 && h >= 1) || w > MAX_SIDE || h > MAX_SIDE) {
+        return invalid("Masukkan lebar dan tinggi antara 1 dan " + MAX_SIDE + " px.");
+      }
+
+      const id = ++runId;
+      const { file, img } = current;
+      const outType = format.value === "same" ? file.type : format.value;
+
+      const canvas = document.createElement("canvas");
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext("2d");
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = "high";
+      if (outType === "image/jpeg") {
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, w, h);
+      }
+      ctx.drawImage(img, 0, 0, w, h);
+
+      canvas.toBlob((blob) => {
+        if (id !== runId || !current) return;
+        if (!blob) return invalid("Browsermu tidak bisa membuat gambar sebesar ini. Coba ukuran lebih kecil.");
+
+        if (outUrl) URL.revokeObjectURL(outUrl);
+        outUrl = URL.createObjectURL(blob);
+
+        const base = file.name.replace(/\.[^.]+$/, "");
+        downloadBtn.href = outUrl;
+        downloadBtn.download = base + "-" + w + "x" + h + "." + (EXT[blob.type] || "jpg");
+        downloadBtn.classList.remove("disabled");
+
+        $("dimAfter").textContent = w + " x " + h;
+        $("fileSizeAfter").textContent = formatBytes(blob.size);
+
+        if (blob.type !== outType) {
+          showMsg("Browsermu menyimpannya dalam format " + EXT[blob.type].toUpperCase() + ". Coba format lain.", "info");
+        } else if (w > img.naturalWidth || h > img.naturalHeight) {
+          showMsg("Memperbesar gambar melebihi aslinya bisa membuatnya terlihat buram.", "info");
+        } else {
+          clearMsg();
+        }
+      }, outType, QUALITY);
+    }
+
+    function formatBytes(bytes) {
+      if (bytes === 0) return "0 B";
+      const units = ["B", "KB", "MB", "GB"];
+      const i = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1);
+      return parseFloat((bytes / Math.pow(1024, i)).toFixed(1)) + " " + units[i];
+    }
+
+    /* ---------- File kiriman dari halaman utama ---------- */
+    if (window.VelfileHandoff) {
+      VelfileHandoff.take().then((files) => {
+        if (files && files.length) pickFile(files);
+      });
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6911711885696253"
+     crossorigin="anonymous"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JPG ke PDF: Velfile</title>
+  <meta name="description" content="Ubah satu atau beberapa gambar jadi PDF. Berjalan di browser kamu.">
+  <meta name="theme-color" content="#f6f7f9">
+  <link rel="canonical" href="https://velfile.my.id/id/tools/jpg-to-pdf">
+  <link rel="alternate" hreflang="en" href="https://velfile.my.id/tools/jpg-to-pdf">
+  <link rel="alternate" hreflang="id" href="https://velfile.my.id/id/tools/jpg-to-pdf">
+  <link rel="alternate" hreflang="x-default" href="https://velfile.my.id/tools/jpg-to-pdf">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="JPG ke PDF: Velfile">
+  <meta property="og:description" content="Ubah satu atau beberapa gambar jadi PDF. Berjalan di browser kamu.">
+  <meta property="og:url" content="https://velfile.my.id/id/tools/jpg-to-pdf">
+  <meta property="og:image" content="https://velfile.my.id/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" type="image/png" href="/favicon.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/css/tool.css">
+
+  <style>
+    [hidden] { display: none !important; }
+
+    /* Kotak upload */
+    @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+    .dropzone { border: 2px dashed var(--line); border-radius: 6px; min-height: 240px; padding: 28px 18px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; cursor: pointer; transition: border-color 0.2s, background 0.2s, transform 0.2s; }
+    .dropzone:hover { border-color: var(--ink); }
+    .dropzone.dragging { border-color: var(--ink); border-style: solid; background: var(--yellow-soft); transform: scale(1.015); }
+    .dz-ico { width: 46px; height: 46px; margin-bottom: 14px; animation: bob 3s ease-in-out infinite; }
+    .dropzone.dragging .dz-ico { animation: none; transform: translateY(-8px) rotate(-5deg); }
+    .dropzone strong { font-size: 18px; }
+    .dropzone p { color: var(--muted); font-size: 14px; margin-bottom: 16px; }
+    .pick { background: var(--ink); color: #fff; padding: 10px 20px; border-radius: 6px; font-size: 14px; font-weight: 600; }
+    .limits { margin-top: 14px; font-size: 13px; color: var(--muted); }
+
+    /* Pesan */
+    .msg { margin-top: 14px; padding: 12px 14px; border-radius: 6px; font-size: 14px; font-weight: 500; animation: rise 0.3s ease both; }
+    .msg:empty { display: none; }
+    .msg.error { background: var(--err-bg); color: var(--err); border: 1px solid #e3b5b1; }
+    .msg.info { background: var(--yellow-soft); border: 1px solid var(--yellow); }
+
+    /* Daftar gambar */
+    .field { margin-top: 24px; }
+    .field-title { display: flex; justify-content: space-between; align-items: baseline; font-weight: 600; font-size: 15px; margin-bottom: 8px; }
+    .field-title small { font-weight: 400; color: var(--muted); font-size: 13px; }
+    .files { list-style: none; border-top: 2px solid var(--ink); }
+    .files li { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--line); animation: rise 0.3s ease both; }
+    .files .thumb { flex: none; width: 52px; height: 52px; border-radius: 4px; border: 1px solid var(--line); background: var(--bg); object-fit: cover; }
+    .files .info { flex: 1; min-width: 0; }
+    .files .name { font-weight: 600; font-size: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .files .size { font-size: 13px; color: var(--muted); }
+    .files .row-btns { display: flex; gap: 6px; flex: none; }
+    .icon-btn { width: 36px; height: 36px; display: grid; place-items: center; border: 2px solid var(--ink); border-radius: 8px; background: var(--paper); color: var(--ink); cursor: pointer; transition: background 0.2s, color 0.2s, transform 0.15s; }
+    .icon-btn:hover:not(:disabled) { background: var(--ink); color: #fff; }
+    .icon-btn:active:not(:disabled) { transform: translateY(1px); }
+    .icon-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+    .icon-btn svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+    .add-more { margin-top: 14px; }
+
+    /* Pengaturan */
+    .opts { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .opts label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 4px; }
+    select { width: 100%; font: inherit; font-size: 15px; padding: 11px 12px; border: 2px solid var(--ink); border-radius: 8px; background: var(--paper); color: var(--ink); }
+
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
+    .btn.primary { flex: 1 1 180px; text-align: center; }
+    .btn:disabled { opacity: 0.5; cursor: wait; }
+
+    .result { margin-top: 20px; padding: 16px; border: 2px solid var(--ink); border-radius: 6px; background: var(--yellow-soft); animation: rise 0.3s ease both; }
+    .result p { font-weight: 600; margin-bottom: 12px; }
+    .result .btn { display: block; text-align: center; }
+
+    @media (max-width: 520px) {
+      .opts { grid-template-columns: 1fr; }
+    }
+  </style>
+  <meta name="twitter:image" content="https://velfile.my.id/og.png">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "JPG ke PDF - Velfile",
+    "description": "Ubah satu atau beberapa gambar jadi PDF. Berjalan di browser kamu.",
+    "url": "https://velfile.my.id/id/tools/jpg-to-pdf",
+    "applicationCategory": "UtilitiesApplication",
+    "operatingSystem": "Any (web browser)",
+    "inLanguage": "id",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Velfile",
+      "url": "https://velfile.my.id/"
+    }
+  }
+  </script>
+</head>
+<body>
+
+  <header>
+    <div class="wrap header-inner">
+      <a href="../index.html" class="brand" aria-label="Beranda Velfile">
+        <svg viewBox="0 0 32 32" aria-hidden="true">
+          <path d="M6 3h15l6 6v20H6z" fill="#f6cf4a" stroke="#15181e" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M21 3v6h6" fill="#ffffff" stroke="#15181e" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M11 15l5 9 5-9" fill="none" stroke="#15181e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        velfile
+      </a>
+      <a href="../index.html#tools" class="back">Semua alat</a>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <section class="tool-head">
+      <h1 class="rise">JPG ke PDF</h1>
+      <p class="rise" style="--d: 0.12s">Ubah satu atau beberapa gambar jadi PDF.</p>
+    </section>
+
+    <section class="sheet rise" style="--d: 0.2s" id="workspace">
+
+      <!-- Tahap 1: pilih gambar -->
+      <div id="dropView">
+        <div class="dropzone" id="dropZone" role="button" tabindex="0" aria-label="Pilih gambar atau letakkan di sini">
+          <svg class="dz-ico" viewBox="0 0 44 44" aria-hidden="true">
+            <path d="M10 4h17l8 8v28H10z" fill="#fff" stroke="#15181e" stroke-width="2.5" stroke-linejoin="round"/>
+            <path d="M27 4v8h8" fill="#f6cf4a" stroke="#15181e" stroke-width="2.5" stroke-linejoin="round"/>
+            <path d="M22 33V21m0 0-5 5m5-5 5 5" fill="none" stroke="#15181e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <strong>Letakkan gambar di sini</strong>
+          <p>atau pilih dari perangkatmu</p>
+          <span class="pick">Pilih gambar</span>
+        </div>
+        <div class="limits">JPG, PNG, atau WEBP. Maksimal 100 MB per file, 30 gambar sekaligus.</div>
+      </div>
+
+      <!-- Tahap 2: susun dan buat PDF -->
+      <div id="workView" hidden>
+        <div class="field" style="margin-top:0">
+          <div class="field-title"><span>Gambar</span><small id="countLabel"></small></div>
+          <ul class="files" id="fileList"></ul>
+          <button class="btn add-more" id="addMoreBtn" type="button">Tambah gambar</button>
+        </div>
+
+        <div class="field">
+          <div class="field-title"><span>Halaman</span></div>
+          <div class="opts">
+            <div>
+              <label for="pageSize">Ukuran halaman</label>
+              <select id="pageSize">
+                <option value="a4">A4</option>
+                <option value="letter">Letter</option>
+                <option value="fit">Sesuaikan gambar</option>
+              </select>
+            </div>
+            <div>
+              <label for="margin">Margin</label>
+              <select id="margin">
+                <option value="0">Tanpa</option>
+                <option value="18" selected>Kecil</option>
+                <option value="36">Sedang</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="btn primary" id="createBtn" type="button">Buat PDF</button>
+          <button class="btn" id="resetBtn" type="button">Mulai ulang</button>
+        </div>
+
+        <div class="result" id="result" hidden>
+          <p id="resultText"></p>
+          <a class="btn primary" id="downloadBtn" download="images.pdf">Unduh PDF</a>
+        </div>
+      </div>
+
+      <div class="msg" id="msg" role="status" aria-live="polite"></div>
+      <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp" multiple hidden>
+    </section>
+
+    <section class="guide">
+      <h2>Cara mengubah gambar jadi PDF</h2>
+      <ol class="how">
+        <li>Pilih satu atau beberapa gambar (JPG, PNG, atau WEBP).</li>
+        <li>Naikkan atau turunkan gambar untuk mengatur urutan halaman, lalu pilih ukuran halaman dan margin.</li>
+        <li>Tekan Buat PDF, lalu Unduh PDF.</li>
+      </ol>
+
+      <h2>Pertanyaan umum</h2>
+      <div class="qa">
+        <details><summary>Berapa gambar yang bisa ditambahkan?</summary><p>Sampai 30 gambar sekaligus.</p></details>
+        <details><summary>Ukuran halaman mana yang sebaiknya dipilih?</summary><p>A4 atau Letter memberi halaman standar. Sesuaikan gambar membuat tiap halaman sesuai ukuran gambarnya.</p></details>
+        <details><summary>Apakah file saya diunggah?</summary><p>Tidak. File diproses di browser di perangkatmu dan tidak dikirim ke server.</p></details>
+      </div>
+
+      <h2>Alat lain</h2>
+      <ul class="related">
+        <li><a href="merge-pdf.html">Gabung PDF</a></li>
+        <li><a href="compress.html">Kompres Gambar</a></li>
+        <li><a href="pdf-to-jpg.html">PDF ke JPG</a></li>
+        <li><a href="compress-pdf.html">Kompres PDF</a></li>
+      </ul>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="wrap footer-inner">
+      <span>Alat file, tanpa ribet.</span>
+      <span style="display:flex;gap:20px;flex-wrap:wrap;"><a href="../about.html">Tentang</a><a href="../privacy.html">Privasi</a><a href="../contact.html">Kontak</a><a href="../../tools/jpg-to-pdf.html">English</a><a href="../index.html">velfile</a></span>
+    </div>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js" integrity="sha384-weMABwrltA6jWR8DDe9Jp5blk+tZQh7ugpCsF3JwSA53WZM9/14PjS5LAJNHNjAI" crossorigin="anonymous"></script>
+  <script src="/js/handoff.js"></script>
+  <script>
+    const MAX_SIZE = 100 * 1024 * 1024;
+    const MAX_FILES = 30;
+    const MAX_SIDE = 3500;       // sisi terpanjang gambar yang diproses ulang
+    const TYPES = ["image/jpeg", "image/png", "image/webp"];
+    const PAGES = { a4: [595.28, 841.89], letter: [612, 792] };
+
+    const ICON_UP = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 10l5-5 5 5"/></svg>';
+    const ICON_DOWN = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 6l5 5 5-5"/></svg>';
+    const ICON_X = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8"/></svg>';
+
+    const $ = (id) => document.getElementById(id);
+    const dropView = $("dropView"), workView = $("workView");
+    const zone = $("dropZone"), input = $("fileInput"), msg = $("msg");
+    const list = $("fileList"), createBtn = $("createBtn");
+    const result = $("result"), downloadBtn = $("downloadBtn");
+
+    let items = [];          // { id, file, url }
+    let nextId = 1;
+    let outUrl = null;
+
+    /* ---------- Pilih gambar ---------- */
+    zone.addEventListener("click", () => input.click());
+    zone.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); input.click(); }
+    });
+    $("addMoreBtn").addEventListener("click", () => input.click());
+    input.addEventListener("change", () => {
+      const files = Array.from(input.files);
+      input.value = "";
+      addFiles(files);
+    });
+    zone.addEventListener("dragover", (e) => { e.preventDefault(); zone.classList.add("dragging"); });
+    zone.addEventListener("dragleave", () => zone.classList.remove("dragging"));
+    zone.addEventListener("drop", (e) => {
+      e.preventDefault();
+      zone.classList.remove("dragging");
+      addFiles(Array.from(e.dataTransfer.files));
+    });
+
+    function showMsg(text, kind) {
+      msg.className = "msg " + (kind || "info");
+      msg.textContent = text;
+    }
+    function clearMsg() { msg.className = "msg"; msg.textContent = ""; }
+
+    function addFiles(files) {
+      if (!files.length) return;
+      const notes = [];
+
+      let valid = files.filter((f) => TYPES.includes(f.type));
+      if (valid.length < files.length) notes.push("Beberapa file dilewati karena bukan JPG, PNG, atau WEBP.");
+      if (!valid.length) return showMsg("JPG ke PDF hanya bisa untuk gambar JPG, PNG, dan WEBP.", "error");
+
+      const big = valid.filter((f) => f.size > MAX_SIZE);
+      if (big.length) {
+        valid = valid.filter((f) => f.size <= MAX_SIZE);
+        notes.push(big.length + " gambar lebih besar dari 100 MB dan dilewati.");
+      }
+
+      const room = MAX_FILES - items.length;
+      if (valid.length > room) {
+        valid = valid.slice(0, Math.max(room, 0));
+        notes.push("Kamu bisa menambah maksimal " + MAX_FILES + " gambar.");
+      }
+
+      valid.forEach((file) => items.push({ id: nextId++, file, url: URL.createObjectURL(file) }));
+
+      if (!items.length) return showMsg(notes.join(" ") || "Tidak ada gambar yang bisa dipakai.", "error");
+
+      dropView.hidden = true;
+      workView.hidden = false;
+      invalidate();
+      renderList();
+      if (notes.length) showMsg(notes.join(" "), "info"); else clearMsg();
+    }
+
+    /* ---------- Daftar ---------- */
+    function renderList() {
+      list.replaceChildren();
+      items.forEach((it, i) => {
+        const li = document.createElement("li");
+        li.dataset.id = it.id;
+
+        const img = document.createElement("img");
+        img.className = "thumb";
+        img.src = it.url;
+        img.alt = "";
+
+        const info = document.createElement("div");
+        info.className = "info";
+        const name = document.createElement("div");
+        name.className = "name";
+        name.textContent = (i + 1) + ". " + it.file.name;
+        const size = document.createElement("div");
+        size.className = "size";
+        size.textContent = formatBytes(it.file.size);
+        info.append(name, size);
+
+        const btns = document.createElement("div");
+        btns.className = "row-btns";
+        btns.append(
+          makeBtn("up", ICON_UP, "Naik", i === 0),
+          makeBtn("down", ICON_DOWN, "Turun", i === items.length - 1),
+          makeBtn("remove", ICON_X, "Hapus", false)
+        );
+
+        li.append(img, info, btns);
+        list.appendChild(li);
+      });
+      $("countLabel").textContent = items.length + " gambar, halaman mengikuti urutan ini";
+      $("addMoreBtn").hidden = items.length >= MAX_FILES;
+    }
+
+    function makeBtn(action, icon, label, disabled) {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "icon-btn";
+      b.dataset.action = action;
+      b.setAttribute("aria-label", label);
+      b.innerHTML = icon;
+      b.disabled = disabled;
+      return b;
+    }
+
+    list.addEventListener("click", (e) => {
+      const btn = e.target.closest("button[data-action]");
+      if (!btn) return;
+      const id = Number(btn.closest("li").dataset.id);
+      const i = items.findIndex((x) => x.id === id);
+      if (i < 0) return;
+
+      if (btn.dataset.action === "up" && i > 0) [items[i - 1], items[i]] = [items[i], items[i - 1]];
+      if (btn.dataset.action === "down" && i < items.length - 1) [items[i + 1], items[i]] = [items[i], items[i + 1]];
+      if (btn.dataset.action === "remove") {
+        URL.revokeObjectURL(items[i].url);
+        items.splice(i, 1);
+      }
+
+      if (!items.length) return startOver();
+      invalidate();
+      renderList();
+    });
+
+    $("pageSize").addEventListener("change", invalidate);
+    $("margin").addEventListener("change", invalidate);
+    $("resetBtn").addEventListener("click", startOver);
+
+    function startOver() {
+      items.forEach((it) => URL.revokeObjectURL(it.url));
+      items = [];
+      invalidate();
+      workView.hidden = true;
+      dropView.hidden = false;
+      clearMsg();
+    }
+
+    function invalidate() {
+      result.hidden = true;
+      if (outUrl) { URL.revokeObjectURL(outUrl); outUrl = null; }
+    }
+
+    /* ---------- Buat PDF ---------- */
+    createBtn.addEventListener("click", async () => {
+      if (!window.PDFLib) {
+        return showMsg("Mesin PDF tidak dapat dimuat. Periksa koneksimu lalu muat ulang halaman.", "error");
+      }
+      createBtn.disabled = true;
+      createBtn.textContent = "Membuat...";
+      invalidate();
+      clearMsg();
+
+      try {
+        const { PDFDocument } = PDFLib;
+        const pdf = await PDFDocument.create();
+        const sizeKey = $("pageSize").value;
+        const m = Number($("margin").value);
+
+        for (const it of items) {
+          const { bytes, kind } = await prepare(it.file);
+          const image = kind === "png" ? await pdf.embedPng(bytes) : await pdf.embedJpg(bytes);
+
+          let pw, ph, dw, dh;
+          if (sizeKey === "fit") {
+            const k = Math.min(0.75, 842 / Math.max(image.width, image.height));
+            dw = image.width * k;
+            dh = image.height * k;
+            pw = dw + 2 * m;
+            ph = dh + 2 * m;
+          } else {
+            let [w, h] = PAGES[sizeKey];
+            if (image.width > image.height) [w, h] = [h, w];
+            pw = w;
+            ph = h;
+            const scale = Math.min((pw - 2 * m) / image.width, (ph - 2 * m) / image.height);
+            dw = image.width * scale;
+            dh = image.height * scale;
+          }
+
+          const page = pdf.addPage([pw, ph]);
+          page.drawImage(image, { x: (pw - dw) / 2, y: (ph - dh) / 2, width: dw, height: dh });
+          await new Promise((r) => setTimeout(r));
+        }
+
+        const out = await pdf.save();
+        const blob = new Blob([out], { type: "application/pdf" });
+        outUrl = URL.createObjectURL(blob);
+
+        const base = items.length === 1 ? items[0].file.name.replace(/\.[^.]+$/, "") : "velfile-images";
+        downloadBtn.href = outUrl;
+        downloadBtn.download = base + ".pdf";
+        $("resultText").textContent = "PDF-mu sudah siap: " + items.length + " halaman, " + formatBytes(blob.size);
+        result.hidden = false;
+      } catch (err) {
+        showMsg("Terjadi masalah saat membuat PDF. Coba dengan gambar yang lebih sedikit atau lebih kecil.", "error");
+      } finally {
+        createBtn.disabled = false;
+        createBtn.textContent = "Buat PDF";
+      }
+    });
+
+    // PNG dipakai apa adanya. JPG dan WebP digambar ulang agar arah foto (EXIF) benar.
+    async function prepare(file) {
+      if (file.type === "image/png") {
+        return { bytes: new Uint8Array(await file.arrayBuffer()), kind: "png" };
+      }
+
+      let source;
+      try {
+        source = await createImageBitmap(file, { imageOrientation: "from-image" });
+      } catch (e) {
+        source = await loadImage(file);
+      }
+
+      const sw = source.width || source.naturalWidth;
+      const sh = source.height || source.naturalHeight;
+      const k = Math.min(1, MAX_SIDE / Math.max(sw, sh));
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.max(1, Math.round(sw * k));
+      canvas.height = Math.max(1, Math.round(sh * k));
+      const ctx = canvas.getContext("2d");
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(source, 0, 0, canvas.width, canvas.height);
+      if (source.close) source.close();
+
+      const blob = await new Promise((r) => canvas.toBlob(r, "image/jpeg", 0.92));
+      if (!blob) throw new Error("encode failed");
+      return { bytes: new Uint8Array(await blob.arrayBuffer()), kind: "jpg" };
+    }
+
+    function loadImage(file) {
+      return new Promise((resolve, reject) => {
+        const url = URL.createObjectURL(file);
+        const img = new Image();
+        img.onload = () => { URL.revokeObjectURL(url); resolve(img); };
+        img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("load failed")); };
+        img.src = url;
+      });
+    }
+
+    function formatBytes(bytes) {
+      if (bytes === 0) return "0 B";
+      const units = ["B", "KB", "MB", "GB"];
+      const i = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1);
+      return parseFloat((bytes / Math.pow(1024, i)).toFixed(1)) + " " + units[i];
+    }
+
+    /* ---------- File kiriman dari halaman utama ---------- */
+    if (window.VelfileHandoff) {
+      VelfileHandoff.take().then((files) => {
+        if (files && files.length) addFiles(files);
+      });
+    }
+  </script>
+
+</body>
+</html>

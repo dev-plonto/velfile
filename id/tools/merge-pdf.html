@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6911711885696253"
+     crossorigin="anonymous"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gabung PDF: Velfile</title>
+  <meta name="description" content="Satukan beberapa file PDF jadi satu dokumen. Berjalan di browser kamu.">
+  <meta name="theme-color" content="#f6f7f9">
+  <link rel="canonical" href="https://velfile.my.id/id/tools/merge-pdf">
+  <link rel="alternate" hreflang="en" href="https://velfile.my.id/tools/merge-pdf">
+  <link rel="alternate" hreflang="id" href="https://velfile.my.id/id/tools/merge-pdf">
+  <link rel="alternate" hreflang="x-default" href="https://velfile.my.id/tools/merge-pdf">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Gabung PDF: Velfile">
+  <meta property="og:description" content="Satukan beberapa file PDF jadi satu dokumen. Berjalan di browser kamu.">
+  <meta property="og:url" content="https://velfile.my.id/id/tools/merge-pdf">
+  <meta property="og:image" content="https://velfile.my.id/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" type="image/png" href="/favicon.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/css/tool.css">
+
+  <style>
+    [hidden] { display: none !important; }
+
+    /* Kotak upload */
+    @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+    .dropzone { border: 2px dashed var(--line); border-radius: 6px; min-height: 240px; padding: 28px 18px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; cursor: pointer; transition: border-color 0.2s, background 0.2s, transform 0.2s; }
+    .dropzone:hover { border-color: var(--ink); }
+    .dropzone.dragging { border-color: var(--ink); border-style: solid; background: var(--yellow-soft); transform: scale(1.015); }
+    .dz-ico { width: 46px; height: 46px; margin-bottom: 14px; animation: bob 3s ease-in-out infinite; }
+    .dropzone.dragging .dz-ico { animation: none; transform: translateY(-8px) rotate(-5deg); }
+    .dropzone strong { font-size: 18px; }
+    .dropzone p { color: var(--muted); font-size: 14px; margin-bottom: 16px; }
+    .pick { background: var(--ink); color: #fff; padding: 10px 20px; border-radius: 6px; font-size: 14px; font-weight: 600; }
+    .limits { margin-top: 14px; font-size: 13px; color: var(--muted); }
+
+    /* Pesan */
+    .msg { margin-top: 14px; padding: 12px 14px; border-radius: 6px; font-size: 14px; font-weight: 500; animation: rise 0.3s ease both; }
+    .msg:empty { display: none; }
+    .msg.error { background: var(--err-bg); color: var(--err); border: 1px solid #e3b5b1; }
+    .msg.info { background: var(--yellow-soft); border: 1px solid var(--yellow); }
+
+    /* Daftar PDF */
+    .field-title { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; font-weight: 600; font-size: 15px; margin-bottom: 8px; }
+    .field-title small { font-weight: 400; color: var(--muted); font-size: 13px; text-align: right; }
+    .files { list-style: none; border-top: 2px solid var(--ink); }
+    .files li { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--line); animation: rise 0.3s ease both; }
+    .doc { flex: none; width: 42px; height: 50px; display: grid; place-items: end center; padding-bottom: 6px; border-radius: 3px; background: var(--ink); color: #fff; font: 800 11px/1 "Bricolage Grotesque", sans-serif; }
+    .files .info { flex: 1; min-width: 0; }
+    .files .name { font-weight: 600; font-size: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .files .size { font-size: 13px; color: var(--muted); }
+    .files .row-btns { display: flex; gap: 6px; flex: none; }
+    .icon-btn { width: 36px; height: 36px; display: grid; place-items: center; border: 2px solid var(--ink); border-radius: 8px; background: var(--paper); color: var(--ink); cursor: pointer; transition: background 0.2s, color 0.2s, transform 0.15s; }
+    .icon-btn:hover:not(:disabled) { background: var(--ink); color: #fff; }
+    .icon-btn:active:not(:disabled) { transform: translateY(1px); }
+    .icon-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+    .icon-btn svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+    .add-more { margin-top: 14px; }
+    .hint { margin-top: 10px; font-size: 13px; color: var(--muted); }
+
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
+    .btn.primary { flex: 1 1 180px; text-align: center; }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn.busy:disabled { opacity: 0.6; cursor: wait; }
+
+    .result { margin-top: 20px; padding: 16px; border: 2px solid var(--ink); border-radius: 6px; background: var(--yellow-soft); animation: rise 0.3s ease both; }
+    .result p { font-weight: 600; margin-bottom: 12px; }
+    .result .btn { display: block; text-align: center; }
+  </style>
+  <meta name="twitter:image" content="https://velfile.my.id/og.png">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Gabung PDF - Velfile",
+    "description": "Satukan beberapa file PDF jadi satu dokumen. Berjalan di browser kamu.",
+    "url": "https://velfile.my.id/id/tools/merge-pdf",
+    "applicationCategory": "UtilitiesApplication",
+    "operatingSystem": "Any (web browser)",
+    "inLanguage": "id",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Velfile",
+      "url": "https://velfile.my.id/"
+    }
+  }
+  </script>
+</head>
+<body>
+
+  <header>
+    <div class="wrap header-inner">
+      <a href="../index.html" class="brand" aria-label="Beranda Velfile">
+        <svg viewBox="0 0 32 32" aria-hidden="true">
+          <path d="M6 3h15l6 6v20H6z" fill="#f6cf4a" stroke="#15181e" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M21 3v6h6" fill="#ffffff" stroke="#15181e" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M11 15l5 9 5-9" fill="none" stroke="#15181e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        velfile
+      </a>
+      <a href="../index.html#tools" class="back">Semua alat</a>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <section class="tool-head">
+      <h1 class="rise">Gabung PDF</h1>
+      <p class="rise" style="--d: 0.12s">Satukan beberapa PDF jadi satu dokumen.</p>
+    </section>
+
+    <section class="sheet rise" style="--d: 0.2s" id="workspace">
+
+      <!-- Tahap 1: pilih PDF -->
+      <div id="dropView">
+        <div class="dropzone" id="dropZone" role="button" tabindex="0" aria-label="Pilih file PDF atau letakkan di sini">
+          <svg class="dz-ico" viewBox="0 0 44 44" aria-hidden="true">
+            <path d="M10 4h17l8 8v28H10z" fill="#fff" stroke="#15181e" stroke-width="2.5" stroke-linejoin="round"/>
+            <path d="M27 4v8h8" fill="#f6cf4a" stroke="#15181e" stroke-width="2.5" stroke-linejoin="round"/>
+            <path d="M22 33V21m0 0-5 5m5-5 5 5" fill="none" stroke="#15181e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <strong>Letakkan file PDF di sini</strong>
+          <p>atau pilih dari perangkatmu</p>
+          <span class="pick">Pilih PDF</span>
+        </div>
+        <div class="limits">Hanya file PDF. Maksimal 100 MB per file, 20 file sekaligus.</div>
+      </div>
+
+      <!-- Tahap 2: susun dan gabungkan -->
+      <div id="workView" hidden>
+        <div class="field-title"><span>File PDF</span><small id="countLabel"></small></div>
+        <ul class="files" id="fileList"></ul>
+        <button class="btn add-more" id="addMoreBtn" type="button">Tambah PDF</button>
+        <div class="hint" id="needMore" hidden>Tambahkan minimal dua PDF untuk menggabungkannya.</div>
+
+        <div class="actions">
+          <button class="btn primary" id="mergeBtn" type="button" disabled>Gabung PDF</button>
+          <button class="btn" id="resetBtn" type="button">Mulai ulang</button>
+        </div>
+
+        <div class="result" id="result" hidden>
+          <p id="resultText"></p>
+          <a class="btn primary" id="downloadBtn" download="merged.pdf">Unduh PDF</a>
+        </div>
+      </div>
+
+      <div class="msg" id="msg" role="status" aria-live="polite"></div>
+      <input type="file" id="fileInput" accept="application/pdf,.pdf" multiple hidden>
+    </section>
+
+    <section class="guide">
+      <h2>Cara menggabung PDF</h2>
+      <ol class="how">
+        <li>Pilih dua atau lebih file PDF.</li>
+        <li>Naikkan atau turunkan file untuk mengatur urutannya.</li>
+        <li>Tekan Gabung PDF, lalu Unduh PDF.</li>
+      </ol>
+
+      <h2>Pertanyaan umum</h2>
+      <div class="qa">
+        <details><summary>Berapa PDF yang bisa digabung?</summary><p>Sampai 20 file sekaligus.</p></details>
+        <details><summary>Apakah formulir dan penanda halaman tetap ada?</summary><p>Halaman disalin apa adanya, tapi bagian interaktif seperti kolom formulir atau penanda halaman bisa tidak ikut.</p></details>
+        <details><summary>Apakah file saya diunggah?</summary><p>Tidak. File diproses di browser di perangkatmu dan tidak dikirim ke server.</p></details>
+      </div>
+
+      <h2>Alat lain</h2>
+      <ul class="related">
+        <li><a href="split-pdf.html">Pisah PDF</a></li>
+        <li><a href="rotate-pdf.html">Putar PDF</a></li>
+        <li><a href="jpg-to-pdf.html">JPG ke PDF</a></li>
+        <li><a href="compress-pdf.html">Kompres PDF</a></li>
+      </ul>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="wrap footer-inner">
+      <span>Alat file, tanpa ribet.</span>
+      <span style="display:flex;gap:20px;flex-wrap:wrap;"><a href="../about.html">Tentang</a><a href="../privacy.html">Privasi</a><a href="../contact.html">Kontak</a><a href="../../tools/merge-pdf.html">English</a><a href="../index.html">velfile</a></span>
+    </div>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js" integrity="sha384-weMABwrltA6jWR8DDe9Jp5blk+tZQh7ugpCsF3JwSA53WZM9/14PjS5LAJNHNjAI" crossorigin="anonymous"></script>
+  <script src="/js/handoff.js"></script>
+  <script>
+    const MAX_SIZE = 100 * 1024 * 1024;
+    const MAX_FILES = 20;
+
+    const ICON_UP = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 10l5-5 5 5"/></svg>';
+    const ICON_DOWN = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 6l5 5 5-5"/></svg>';
+    const ICON_X = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8"/></svg>';
+
+    const $ = (id) => document.getElementById(id);
+    const dropView = $("dropView"), workView = $("workView");
+    const zone = $("dropZone"), input = $("fileInput"), msg = $("msg");
+    const list = $("fileList"), mergeBtn = $("mergeBtn");
+    const result = $("result"), downloadBtn = $("downloadBtn");
+
+    let items = [];          // { id, file, pages }
+    let nextId = 1;
+    let outUrl = null;
+
+    /* ---------- Pilih PDF ---------- */
+    zone.addEventListener("click", () => input.click());
+    zone.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); input.click(); }
+    });
+    $("addMoreBtn").addEventListener("click", () => input.click());
+    input.addEventListener("change", () => {
+      const files = Array.from(input.files);
+      input.value = "";
+      addFiles(files);
+    });
+    zone.addEventListener("dragover", (e) => { e.preventDefault(); zone.classList.add("dragging"); });
+    zone.addEventListener("dragleave", () => zone.classList.remove("dragging"));
+    zone.addEventListener("drop", (e) => {
+      e.preventDefault();
+      zone.classList.remove("dragging");
+      addFiles(Array.from(e.dataTransfer.files));
+    });
+
+    function showMsg(text, kind) {
+      msg.className = "msg " + (kind || "info");
+      msg.textContent = text;
+    }
+    function clearMsg() { msg.className = "msg"; msg.textContent = ""; }
+
+    function isPdf(f) {
+      return f.type === "application/pdf" || /\.pdf$/i.test(f.name);
+    }
+
+    async function addFiles(files) {
+      if (!files.length) return;
+      if (!window.PDFLib) {
+        return showMsg("Mesin PDF tidak dapat dimuat. Periksa koneksimu lalu muat ulang halaman.", "error");
+      }
+      const notes = [];
+
+      let valid = files.filter(isPdf);
+      if (valid.length < files.length) notes.push("Beberapa file dilewati karena bukan PDF.");
+      if (!valid.length) return showMsg("Gabung PDF hanya bisa untuk file PDF.", "error");
+
+      const big = valid.filter((f) => f.size > MAX_SIZE);
+      if (big.length) {
+        valid = valid.filter((f) => f.size <= MAX_SIZE);
+        notes.push(big.length + " PDF lebih besar dari 100 MB dan dilewati.");
+      }
+
+      const room = MAX_FILES - items.length;
+      if (valid.length > room) {
+        valid = valid.slice(0, Math.max(room, 0));
+        notes.push("Kamu bisa menambah maksimal " + MAX_FILES + " PDF.");
+      }
+
+      showMsg("Membaca file-filemu...", "info");
+
+      for (const file of valid) {
+        try {
+          const doc = await PDFLib.PDFDocument.load(await file.arrayBuffer());
+          items.push({ id: nextId++, file, pages: doc.getPageCount() });
+        } catch (e) {
+          notes.push(file.name + " dikunci dengan kata sandi atau tidak bisa dibaca, jadi dilewati.");
+        }
+      }
+
+      if (!items.length) {
+        return showMsg(notes.join(" ") || "Tidak ada PDF yang bisa dipakai.", "error");
+      }
+
+      dropView.hidden = true;
+      workView.hidden = false;
+      invalidate();
+      renderList();
+      if (notes.length) showMsg(notes.join(" "), "info"); else clearMsg();
+    }
+
+    /* ---------- Daftar ---------- */
+    function renderList() {
+      list.replaceChildren();
+      items.forEach((it, i) => {
+        const li = document.createElement("li");
+        li.dataset.id = it.id;
+
+        const doc = document.createElement("div");
+        doc.className = "doc";
+        doc.textContent = "PDF";
+
+        const info = document.createElement("div");
+        info.className = "info";
+        const name = document.createElement("div");
+        name.className = "name";
+        name.textContent = (i + 1) + ". " + it.file.name;
+        const size = document.createElement("div");
+        size.className = "size";
+        size.textContent = it.pages + " halaman, " + formatBytes(it.file.size);
+        info.append(name, size);
+
+        const btns = document.createElement("div");
+        btns.className = "row-btns";
+        btns.append(
+          makeBtn("up", ICON_UP, "Naik", i === 0),
+          makeBtn("down", ICON_DOWN, "Turun", i === items.length - 1),
+          makeBtn("remove", ICON_X, "Hapus", false)
+        );
+
+        li.append(doc, info, btns);
+        list.appendChild(li);
+      });
+
+      const totalPages = items.reduce((s, it) => s + it.pages, 0);
+      $("countLabel").textContent = items.length + " file, " + totalPages + " halaman dalam urutan ini";
+      $("addMoreBtn").hidden = items.length >= MAX_FILES;
+      $("needMore").hidden = items.length >= 2;
+      mergeBtn.disabled = items.length < 2;
+    }
+
+    function makeBtn(action, icon, label, disabled) {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "icon-btn";
+      b.dataset.action = action;
+      b.setAttribute("aria-label", label);
+      b.innerHTML = icon;
+      b.disabled = disabled;
+      return b;
+    }
+
+    list.addEventListener("click", (e) => {
+      const btn = e.target.closest("button[data-action]");
+      if (!btn) return;
+      const id = Number(btn.closest("li").dataset.id);
+      const i = items.findIndex((x) => x.id === id);
+      if (i < 0) return;
+
+      if (btn.dataset.action === "up" && i > 0) [items[i - 1], items[i]] = [items[i], items[i - 1]];
+      if (btn.dataset.action === "down" && i < items.length - 1) [items[i + 1], items[i]] = [items[i], items[i + 1]];
+      if (btn.dataset.action === "remove") items.splice(i, 1);
+
+      if (!items.length) return startOver();
+      invalidate();
+      renderList();
+    });
+
+    $("resetBtn").addEventListener("click", startOver);
+
+    function startOver() {
+      items = [];
+      invalidate();
+      workView.hidden = true;
+      dropView.hidden = false;
+      clearMsg();
+    }
+
+    function invalidate() {
+      result.hidden = true;
+      if (outUrl) { URL.revokeObjectURL(outUrl); outUrl = null; }
+    }
+
+    /* ---------- Gabungkan ---------- */
+    mergeBtn.addEventListener("click", async () => {
+      if (!window.PDFLib) {
+        return showMsg("Mesin PDF tidak dapat dimuat. Periksa koneksimu lalu muat ulang halaman.", "error");
+      }
+      mergeBtn.disabled = true;
+      mergeBtn.classList.add("busy");
+      mergeBtn.textContent = "Menggabungkan...";
+      invalidate();
+      clearMsg();
+
+      try {
+        const { PDFDocument } = PDFLib;
+        const out = await PDFDocument.create();
+        let totalPages = 0;
+
+        for (const it of items) {
+          const src = await PDFDocument.load(await it.file.arrayBuffer());
+          const pages = await out.copyPages(src, src.getPageIndices());
+          pages.forEach((p) => out.addPage(p));
+          totalPages += pages.length;
+          await new Promise((r) => setTimeout(r));
+        }
+
+        const bytes = await out.save();
+        const blob = new Blob([bytes], { type: "application/pdf" });
+        outUrl = URL.createObjectURL(blob);
+
+        downloadBtn.href = outUrl;
+        $("resultText").textContent = "PDF-mu sudah siap: " + items.length + " file, " + totalPages + " halaman, " + formatBytes(blob.size);
+        result.hidden = false;
+      } catch (err) {
+        showMsg("Terjadi masalah saat menggabungkan. Coba dengan PDF yang lebih sedikit atau lebih kecil.", "error");
+      } finally {
+        mergeBtn.classList.remove("busy");
+        mergeBtn.textContent = "Gabung PDF";
+        mergeBtn.disabled = items.length < 2;
+      }
+    });
+
+    function formatBytes(bytes) {
+      if (bytes === 0) return "0 B";
+      const units = ["B", "KB", "MB", "GB"];
+      const i = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1);
+      return parseFloat((bytes / Math.pow(1024, i)).toFixed(1)) + " " + units[i];
+    }
+
+    /* ---------- File kiriman dari halaman utama ---------- */
+    if (window.VelfileHandoff) {
+      VelfileHandoff.take().then((files) => {
+        if (files && files.length) addFiles(files);
+      });
+    }
+  </script>
+
+</body>
+</html>
