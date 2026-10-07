@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6911711885696253"
+     crossorigin="anonymous"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Velfile: File tools, without the fuss</title>
+  <meta name="description" content="Simple tools for everyday files. Compress, resize and convert images, or merge, split and convert PDFs, right in your browser.">
+  <meta name="theme-color" content="#f6f7f9">
+  <meta name="google-site-verification" content="qWDksDF7Jo7KlDmN38_NzSq34lPtCGyi5y5GBJJxbR0" />
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Velfile: File tools, without the fuss">
+  <meta property="og:description" content="Compress, resize and convert images. Merge, split and convert PDFs. Simple, in your browser.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta property="og:url" content="https://velfile.my.id/">
+  <meta property="og:image" content="https://velfile.my.id/og.png">
+  <meta name="twitter:image" content="https://velfile.my.id/og.png">
+  <link rel="canonical" href="https://velfile.my.id/">
+  <link rel="alternate" hreflang="en" href="https://velfile.my.id/">
+  <link rel="alternate" hreflang="id" href="https://velfile.my.id/id/">
+  <link rel="alternate" hreflang="x-default" href="https://velfile.my.id/">
+  <link rel="icon" type="image/png" href="/favicon.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #f6f7f9;
+      --paper: #ffffff;
+      --ink: #15181e;
+      --muted: #5b6470;
+      --line: #dfe3e8;
+      --yellow: #f6cf4a;
+      --yellow-soft: #fdf1c4;
+      --ok: #1f6b4a;
+      --ok-bg: #e3f3ea;
+      --err: #a8261d;
+      --err-bg: #fde8e6;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--ink); font-family: "Figtree", system-ui, sans-serif; line-height: 1.65; overflow-x: hidden; }
+    a { color: inherit; text-decoration: none; }
+    :focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+
+    .wrap { max-width: 1080px; margin: 0 auto; padding-inline: 24px; }
+    h1, h2, h3, .brand { font-family: "Bricolage Grotesque", "Figtree", sans-serif; }
+
+    /* Animasi */
+    @keyframes rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+    @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+    .rise { animation: rise 0.6s ease both; animation-delay: var(--d, 0s); }
+
+    /* Header */
+    header { padding-block: 28px; }
+    .header-inner { display: flex; align-items: center; justify-content: space-between; }
+    .brand { display: flex; align-items: center; gap: 10px; font-size: 24px; font-weight: 800; letter-spacing: -0.03em; }
+    .brand svg { width: 34px; height: 34px; transition: transform 0.25s ease; }
+    .brand:hover svg { transform: rotate(-8deg); }
+    .nav { display: flex; gap: 26px; font-size: 15px; font-weight: 500; }
+    .nav a { padding-block: 4px; background: linear-gradient(var(--ink), var(--ink)) left bottom / 0 2px no-repeat; transition: background-size 0.25s ease; }
+    .nav a:hover { background-size: 100% 2px; }
+
+    /* Hero */
+    .hero { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 72px; align-items: center; padding-block: 56px 112px; }
+    .hero h1 { font-size: clamp(42px, 6vw, 70px); line-height: 1.02; letter-spacing: -0.035em; font-weight: 800; margin-bottom: 26px; }
+    .lead { max-width: 44ch; color: var(--muted); font-size: 18px; margin-bottom: 34px; }
+    .btn-link { display: inline-block; font-weight: 600; padding: 12px 22px; border: 2px solid var(--ink); border-radius: 8px; transition: background 0.2s, color 0.2s, transform 0.15s; }
+    .btn-link:hover { background: var(--ink); color: #fff; }
+    .btn-link:active { transform: translateY(1px); }
+
+    /* Kartu upload: kertas bersudut lipat */
+    .sheet {
+      position: relative;
+      background: var(--paper);
+      border: 2px solid var(--ink);
+      border-radius: 4px;
+      padding: 26px;
+      box-shadow: 8px 8px 0 var(--yellow);
+    }
+    .sheet::before { content: ""; position: absolute; top: -2px; right: -10px; width: 12px; height: 40px; background: var(--bg); }
+    .sheet::after {
+      content: "";
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(to bottom left, var(--bg) 0 48%, var(--ink) 48% 52%, var(--paper) 52% 100%);
+      border-left: 2px solid var(--ink);
+      border-bottom: 2px solid var(--ink);
+    }
+    .dropzone {
+      border: 2px dashed var(--line);
+      border-radius: 6px;
+      min-height: 240px;
+      padding: 28px 18px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s, transform 0.2s;
+    }
+    .dropzone:hover { border-color: var(--ink); }
+    .dropzone.dragging { border-color: var(--ink); border-style: solid; background: var(--yellow-soft); transform: scale(1.015); }
+    .dz-ico { width: 46px; height: 46px; margin-bottom: 14px; animation: bob 3s ease-in-out infinite; }
+    .dropzone.dragging .dz-ico { animation: none; transform: translateY(-8px) rotate(-5deg); }
+    .dropzone strong { font-size: 18px; }
+    .dropzone p { color: var(--muted); font-size: 14px; margin-bottom: 16px; }
+    .pick { background: var(--ink); color: #fff; padding: 10px 20px; border-radius: 6px; font-size: 14px; font-weight: 600; transition: transform 0.15s; }
+    .dropzone:active .pick { transform: translateY(1px); }
+    .limits { margin-top: 14px; font-size: 13px; color: var(--muted); }
+
+    .result { margin-top: 14px; border-radius: 6px; font-size: 14px; }
+    .result:empty { display: none; }
+    .result.error, .result.ok { animation: rise 0.3s ease both; }
+    .result.error { background: var(--err-bg); color: var(--err); border: 1px solid #e3b5b1; padding: 12px 14px; font-weight: 500; }
+    .result.ok { background: var(--bg); border: 1px solid var(--line); padding: 14px; }
+    .result .file-name { font-weight: 600; word-break: break-word; }
+    .result .file-meta { color: var(--muted); font-size: 13px; margin-bottom: 12px; }
+    .result .ask { font-size: 13px; color: var(--muted); margin-bottom: 8px; }
+    .result .links { display: flex; flex-wrap: wrap; gap: 8px; }
+    .result .links a { padding: 7px 12px; border: 1.5px solid var(--ink); border-radius: 6px; font-weight: 600; font-size: 13px; background: var(--paper); transition: background 0.2s, color 0.2s; }
+    .result .links a:hover { background: var(--ink); color: #fff; }
+
+    /* Section */
+    .section { padding-block: 24px 112px; }
+    .section-head { margin-bottom: 32px; }
+    .section-head h2 { font-size: 34px; letter-spacing: -0.03em; line-height: 1.1; margin-bottom: 10px; }
+    .section-head p { color: var(--muted); max-width: 48ch; }
+
+    /* Tools */
+    .tools { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0 64px; }
+    .tool-group h3 { font-size: 22px; padding-bottom: 10px; border-bottom: 2px solid var(--ink); }
+    .tool-list { list-style: none; }
+    .tool-list li + li { border-top: 1px solid var(--line); }
+    .tool-list a { display: flex; align-items: center; gap: 18px; padding: 18px 12px; margin-inline: -12px; border-radius: 8px; transition: background 0.2s; }
+    .tool-list a:hover { background: var(--paper); }
+    .ico {
+      flex: none;
+      width: 42px;
+      height: 50px;
+      position: relative;
+      border: 2px solid var(--ink);
+      border-radius: 3px;
+      background: var(--yellow);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding-top: 6px;
+      color: var(--ink);
+      transition: transform 0.25s ease;
+    }
+    .ico.pdf { background: var(--ink); color: #fff; }
+    .ico svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+    .ico::before { content: ""; position: absolute; top: -2px; right: -2px; width: 13px; height: 13px; background: linear-gradient(to bottom left, var(--bg) 0 48%, var(--ink) 48% 52%, #fff 52% 100%); border-left: 2px solid var(--ink); border-bottom: 2px solid var(--ink); }
+    .tool-list a:hover .ico { transform: rotate(-6deg) translateY(-2px); }
+    .tool-list strong { display: block; font-size: 17px; }
+    .tool-list span { color: var(--muted); font-size: 14px; }
+
+    /* Steps */
+    .steps { list-style: none; display: grid; grid-template-columns: repeat(3, 1fr); gap: 48px; counter-reset: s; }
+    .steps li { counter-increment: s; border-top: 2px solid var(--ink); padding-top: 18px; }
+    .steps li::before { content: counter(s); display: grid; place-items: center; width: 38px; height: 38px; margin-bottom: 14px; border-radius: 50%; background: var(--yellow); font: 800 18px/1 "Bricolage Grotesque", sans-serif; }
+    .steps h3 { font-size: 18px; margin-bottom: 4px; }
+    .steps p { color: var(--muted); font-size: 15px; max-width: 30ch; }
+
+    /* FAQ */
+    .faq { margin-top: 96px; max-width: 760px; }
+    .faq h2 { font-size: 34px; letter-spacing: -0.03em; line-height: 1.1; margin-bottom: 20px; }
+    .faq details { border-bottom: 1px solid var(--line); }
+    .faq details:first-of-type { border-top: 2px solid var(--ink); }
+    .faq summary { list-style: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 16px; padding-block: 18px; font-weight: 600; font-size: 17px; }
+    .faq summary::-webkit-details-marker { display: none; }
+    .faq summary::after { content: "+"; font-size: 24px; line-height: 1; transition: transform 0.25s ease; }
+    .faq details[open] summary::after { transform: rotate(45deg); }
+    .faq details p { padding-bottom: 18px; color: var(--muted); font-size: 15px; max-width: 62ch; animation: rise 0.3s ease both; }
+
+    /* Footer */
+    footer { border-top: 2px solid var(--ink); }
+    .footer-inner { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding-block: 36px; flex-wrap: wrap; font-size: 14px; }
+    .footer-inner .brand { font-size: 18px; }
+    .footer-inner p { color: var(--muted); }
+    .footer-links { display: flex; flex-wrap: wrap; gap: 20px; font-weight: 500; }
+    .footer-links a:hover { text-decoration: underline; }
+
+    @media (max-width: 860px) {
+      .hero { grid-template-columns: 1fr; gap: 64px; padding-bottom: 80px; }
+      .tools { grid-template-columns: 1fr; }
+      .tool-group + .tool-group { margin-top: 48px; }
+      .steps { grid-template-columns: 1fr; gap: 32px; }
+      .faq { margin-top: 72px; }
+    }
+    @media (max-width: 520px) {
+      .wrap { padding-inline: 18px; }
+      .nav { gap: 16px; }
+      .sheet { padding: 18px; box-shadow: 6px 6px 0 var(--yellow); }
+      .section-head h2, .faq h2 { font-size: 28px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
+  </style>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Velfile",
+    "alternateName": ["Velfile.my.id"],
+    "url": "https://velfile.my.id/"
+  }
+  </script>
+</head>
+<body>
+
+  <header>
+    <div class="wrap header-inner">
+      <a href="index.html" class="brand" aria-label="Velfile home">
+        <svg viewBox="0 0 32 32" aria-hidden="true">
+          <path d="M6 3h15l6 6v20H6z" fill="#f6cf4a" stroke="#15181e" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M21 3v6h6" fill="#ffffff" stroke="#15181e" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M11 15l5 9 5-9" fill="none" stroke="#15181e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        velfile
+      </a>
+      <nav class="nav" aria-label="Main">
+        <a href="#tools">Tools</a>
+        <a href="#about">How it works</a>
+        <a href="#faq">FAQ</a>
+        <a href="id/index.html">ID</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+
+    <section class="wrap hero">
+      <div>
+        <h1 class="rise">File tools, without the fuss.</h1>
+        <p class="lead rise" style="--d: 0.12s">Compress, resize and convert images. Merge, split and convert PDFs. Pick a tool, add your file, download the result.</p>
+        <a href="#tools" class="btn-link rise" style="--d: 0.24s">See all tools</a>
+      </div>
+
+      <div class="sheet rise" style="--d: 0.2s">
+        <div class="dropzone" id="dropZone" role="button" tabindex="0" aria-label="Choose a file or drop it here">
+          <svg class="dz-ico" viewBox="0 0 44 44" aria-hidden="true">
+            <path d="M10 4h17l8 8v28H10z" fill="#fff" stroke="#15181e" stroke-width="2.5" stroke-linejoin="round"/>
+            <path d="M27 4v8h8" fill="#f6cf4a" stroke="#15181e" stroke-width="2.5" stroke-linejoin="round"/>
+            <path d="M22 33V21m0 0-5 5m5-5 5 5" fill="none" stroke="#15181e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <strong>Drop a file here</strong>
+          <p>or pick one from your device</p>
+          <span class="pick">Choose file</span>
+        </div>
+        <div class="limits">JPG, PNG or WEBP up to 50 MB. PDF up to 100 MB.</div>
+        <div class="result" id="result" role="status" aria-live="polite"></div>
+        <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp,application/pdf" multiple hidden>
+      </div>
+    </section>
+
+    <section class="wrap section" id="tools">
+      <div class="section-head">
+        <h2>Pick a tool</h2>
+        <p>Each tool does one job, grouped by file type.</p>
+      </div>
+
+      <div class="tools">
+        <div class="tool-group">
+          <h3>Images</h3>
+          <ul class="tool-list">
+            <li><a href="tools/compress.html"><div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v6m0 0-3-3m3 3 3-3M12 21v-6m0 0-3 3m3-3 3 3M5 12h14"/></svg></div><div><strong>Compress Image</strong><span>Make the file smaller without ruining the picture.</span></div></a></li>
+            <li><a href="tools/resize.html"><div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19 19 5M5 19v-6m0 6h6M19 5v6m0-6h-6"/></svg></div><div><strong>Resize Image</strong><span>Set a new width and height, with the ratio locked if you like.</span></div></a></li>
+            <li><a href="tools/converter.html"><div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h13m0 0-3-3m3 3-3 3M20 16H7m0 0 3-3m-3 3 3 3"/></svg></div><div><strong>Image Converter</strong><span>Switch between JPG, PNG and WebP.</span></div></a></li>
+            <li><a href="tools/crop.html"><div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2v14h14M2 6h14v14"/></svg></div><div><strong>Crop Image</strong><span>Cut out the part of an image you want.</span></div></a></li>
+          </ul>
+        </div>
+
+        <div class="tool-group">
+          <h3>PDF</h3>
+          <ul class="tool-list">
+            <li><a href="tools/compress-pdf.html"><div class="ico pdf"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v6m0 0-3-3m3 3 3-3M12 21v-6m0 0-3 3m3-3 3 3M5 12h14"/></svg></div><div><strong>Compress PDF</strong><span>Make a PDF smaller so it is easy to send.</span></div></a></li>
+            <li><a href="tools/jpg-to-pdf.html"><div class="ico pdf"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v7m0 0-3-3m3 3 3-3M3 21l5-6 4 4 3-3 6 5"/></svg></div><div><strong>JPG to PDF</strong><span>Turn one or more images into a PDF.</span></div></a></li>
+            <li><a href="tools/merge-pdf.html"><div class="ico pdf"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h4c4 0 4 7 8 7M4 19h4c4 0 4-7 8-7m0 0h4m0 0-3-3m3 3-3 3"/></svg></div><div><strong>Merge PDF</strong><span>Join several PDFs into one document.</span></div></a></li>
+            <li><a href="tools/split-pdf.html"><div class="ico pdf"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h6c4 0 4-6 8-6h4M9 12c4 0 4 6 8 6h4M18 3l3 3-3 3M18 15l3 3-3 3"/></svg></div><div><strong>Split PDF</strong><span>Pull the pages you need into a new PDF.</span></div></a></li>
+            <li><a href="tools/pdf-to-jpg.html"><div class="ico pdf"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21v-7m0 0-3 3m3-3 3 3M3 10l5-6 4 4 3-3 6 5"/></svg></div><div><strong>PDF to JPG</strong><span>Save the pages of a PDF as images.</span></div></a></li>
+            <li><a href="tools/rotate-pdf.html"><div class="ico pdf"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.5-5.8M20 4v5h-5"/></svg></div><div><strong>Rotate PDF</strong><span>Turn PDF pages to the right direction.</span></div></a></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="wrap section" id="about">
+      <div class="section-head">
+        <h2>How it works</h2>
+        <p>Three steps. No account, no settings you don't need. Whenever possible, files are processed in your browser instead of being sent to a server.</p>
+      </div>
+
+      <ol class="steps">
+        <li><h3>Choose a tool</h3><p>Start from the list above, or drop a file and we suggest tools that fit it.</p></li>
+        <li><h3>Add your file</h3><p>Set the one or two options that matter. Nothing else to fill in.</p></li>
+        <li><h3>Download</h3><p>Save the result to your device.</p></li>
+      </ol>
+
+      <div class="faq" id="faq">
+        <h2>Questions</h2>
+        <details><summary>Are my files uploaded anywhere?</summary><p>Whenever possible, your files are processed directly in your browser and are not sent to a server.</p></details>
+        <details><summary>Do I need an account?</summary><p>No. Every tool works without signing up.</p></details>
+        <details><summary>Which file types can I use?</summary><p>Images in JPG, PNG and WEBP format, and PDF documents.</p></details>
+        <details><summary>Is there a file size limit?</summary><p>Yes. Images can be up to 50 MB and PDFs up to 100 MB each. Larger files can overload your browser, especially on a phone.</p></details>
+        <details><summary>Does it work on my phone?</summary><p>Yes. Velfile runs in any modern mobile browser.</p></details>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="wrap footer-inner">
+      <a href="index.html" class="brand">velfile</a>
+      <p>File tools, without the fuss.</p>
+      <div class="footer-links">
+        <a href="#tools">Tools</a>
+        <a href="#about">How it works</a>
+        <a href="#faq">FAQ</a>
+        <a href="about.html">About</a>
+        <a href="privacy.html">Privacy</a>
+        <a href="contact.html">Contact</a>
+        <a href="id/index.html">Bahasa Indonesia</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/handoff.js"></script>
+  <script>
+    const MAX_IMAGE = 50 * 1024 * 1024;
+    const MAX_PDF = 100 * 1024 * 1024;
+    const limitFor = (f) => (f.type === "application/pdf" ? MAX_PDF : MAX_IMAGE);
+
+    // Hapus salinan file yang tersisa dari kunjungan sebelumnya
+    if (window.VelfileHandoff) VelfileHandoff.take();
+    const TYPES = ["image/jpeg", "image/png", "image/webp", "application/pdf"];
+
+    const IMAGE_TOOLS = [
+      ["Compress Image", "tools/compress.html"],
+      ["Resize Image", "tools/resize.html"],
+      ["Image Converter", "tools/converter.html"],
+      ["Crop Image", "tools/crop.html"],
+      ["JPG to PDF", "tools/jpg-to-pdf.html"]
+    ];
+    const MERGE = ["Merge PDF", "tools/merge-pdf.html"];
+    const SPLIT = ["Split PDF", "tools/split-pdf.html"];
+    const PDF_TO_JPG = ["PDF to JPG", "tools/pdf-to-jpg.html"];
+    const ROTATE = ["Rotate PDF", "tools/rotate-pdf.html"];
+    const COMPRESS_PDF = ["Compress PDF", "tools/compress-pdf.html"];
+
+    const input = document.getElementById("fileInput");
+    const zone = document.getElementById("dropZone");
+    const result = document.getElementById("result");
+
+    zone.addEventListener("click", () => input.click());
+
+    zone.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        input.click();
+      }
+    });
+
+    input.addEventListener("change", () => {
+      const files = Array.from(input.files);
+      input.value = "";
+      handleFiles(files);
+    });
+
+    zone.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      zone.classList.add("dragging");
+    });
+
+    zone.addEventListener("dragleave", () => zone.classList.remove("dragging"));
+
+    zone.addEventListener("drop", (e) => {
+      e.preventDefault();
+      zone.classList.remove("dragging");
+      handleFiles(Array.from(e.dataTransfer.files));
+    });
+
+    function handleFiles(files) {
+      if (!files.length) return;
+
+      const unsupported = files.find((f) => !TYPES.includes(f.type));
+      if (unsupported) {
+        return showError(unsupported.name + " is not supported. Use a JPG, PNG, WEBP or PDF file.");
+      }
+
+      const tooBig = files.find((f) => f.size > limitFor(f));
+      if (tooBig) {
+        return showError(tooBig.name + " is larger than " + (limitFor(tooBig) / 1024 / 1024) + " MB. Choose a smaller file.");
+      }
+
+      const pdfCount = files.filter((f) => f.type === "application/pdf").length;
+      if (pdfCount > 0 && pdfCount !== files.length) {
+        return showError("Choose either images or PDFs, not both at once.");
+      }
+
+      let tools;
+      if (pdfCount === 0) tools = IMAGE_TOOLS;
+      else tools = files.length > 1 ? [MERGE] : [COMPRESS_PDF, PDF_TO_JPG, SPLIT, ROTATE, MERGE];
+
+      showFiles(files, tools);
+    }
+
+    function showError(message) {
+      result.className = "result error";
+      result.textContent = message;
+    }
+
+    function showFiles(files, tools) {
+      const total = files.reduce((sum, f) => sum + f.size, 0);
+
+      const name = document.createElement("div");
+      name.className = "file-name";
+      name.textContent = files.length === 1 ? files[0].name : files.length + " files selected";
+
+      const meta = document.createElement("div");
+      meta.className = "file-meta";
+      meta.textContent = (files.length === 1 ? files[0].type.split("/")[1].toUpperCase() + ", " : "") + formatBytes(total);
+
+      const ask = document.createElement("div");
+      ask.className = "ask";
+      ask.textContent = "What do you want to do with it?";
+
+      const links = document.createElement("div");
+      links.className = "links";
+      tools.forEach(([label, href]) => {
+        const a = document.createElement("a");
+        a.href = href;
+        a.textContent = label;
+        a.addEventListener("click", async (e) => {
+          if (e.button !== 0 || e.ctrlKey || e.metaKey || e.shiftKey) return;
+          e.preventDefault();
+          a.textContent = "Opening...";
+          try {
+            await Promise.race([
+              window.VelfileHandoff ? VelfileHandoff.save(files) : null,
+              new Promise((resolve) => setTimeout(resolve, 4000))
+            ]);
+          } catch (err) {}
+          window.location.href = href;
+        });
+        links.appendChild(a);
+      });
+
+      result.className = "result ok";
+      result.replaceChildren(name, meta, ask, links);
+    }
+
+    function formatBytes(bytes) {
+      if (bytes === 0) return "0 B";
+      const units = ["B", "KB", "MB", "GB"];
+      const i = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1);
+      return parseFloat((bytes / Math.pow(1024, i)).toFixed(1)) + " " + units[i];
+    }
+  </script>
+
+</body>
+</html>

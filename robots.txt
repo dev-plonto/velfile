@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://velfile.my.id/sitemap.xml
