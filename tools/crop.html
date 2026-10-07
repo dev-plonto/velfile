@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6911711885696253"
+     crossorigin="anonymous"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crop Image: Velfile</title>
+  <meta name="description" content="Crop an image to the part you want. Runs in your browser.">
+  <meta name="theme-color" content="#f6f7f9">
+  <link rel="canonical" href="https://velfile.my.id/tools/crop">
+  <link rel="alternate" hreflang="en" href="https://velfile.my.id/tools/crop">
+  <link rel="alternate" hreflang="id" href="https://velfile.my.id/id/tools/crop">
+  <link rel="alternate" hreflang="x-default" href="https://velfile.my.id/tools/crop">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Crop Image: Velfile">
+  <meta property="og:description" content="Crop an image to the part you want. Runs in your browser.">
+  <meta property="og:url" content="https://velfile.my.id/tools/crop">
+  <meta property="og:image" content="https://velfile.my.id/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" type="image/png" href="/favicon.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="../css/tool.css">
+
+  <style>
+    [hidden] { display: none !important; }
+
+    /* Kotak upload */
+    @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+    .dropzone { border: 2px dashed var(--line); border-radius: 6px; min-height: 240px; padding: 28px 18px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; cursor: pointer; transition: border-color 0.2s, background 0.2s, transform 0.2s; }
+    .dropzone:hover { border-color: var(--ink); }
+    .dropzone.dragging { border-color: var(--ink); border-style: solid; background: var(--yellow-soft); transform: scale(1.015); }
+    .dz-ico { width: 46px; height: 46px; margin-bottom: 14px; animation: bob 3s ease-in-out infinite; }
+    .dropzone.dragging .dz-ico { animation: none; transform: translateY(-8px) rotate(-5deg); }
+    .dropzone strong { font-size: 18px; }
+    .dropzone p { color: var(--muted); font-size: 14px; margin-bottom: 16px; }
+    .pick { background: var(--ink); color: #fff; padding: 10px 20px; border-radius: 6px; font-size: 14px; font-weight: 600; }
+    .limits { margin-top: 14px; font-size: 13px; color: var(--muted); }
+
+    /* Pesan */
+    .msg { margin-top: 14px; padding: 12px 14px; border-radius: 6px; font-size: 14px; font-weight: 500; animation: rise 0.3s ease both; }
+    .msg:empty { display: none; }
+    .msg.error { background: var(--err-bg); color: var(--err); border: 1px solid #e3b5b1; }
+    .msg.info { background: var(--yellow-soft); border: 1px solid var(--yellow); }
+
+    /* Area kerja */
+    .preview { background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 10px; display: flex; justify-content: center; }
+    .preview img { max-width: 100%; max-height: 260px; object-fit: contain; border-radius: 3px; }
+    .file-info { margin-top: 12px; }
+    .file-name { font-weight: 600; word-break: break-word; }
+    .file-meta { color: var(--muted); font-size: 13px; }
+
+    .field { margin-top: 24px; }
+    .field-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+    .field label { font-weight: 600; font-size: 15px; }
+    .field output { font: 800 18px/1 "Bricolage Grotesque", sans-serif; }
+    input[type="range"] { width: 100%; accent-color: var(--ink); height: 28px; }
+    input[type="range"]:disabled { opacity: 0.4; }
+    select { width: 100%; font: inherit; font-size: 15px; padding: 11px 12px; border: 2px solid var(--ink); border-radius: 8px; background: var(--paper); color: var(--ink); }
+    .hint { margin-top: 6px; font-size: 13px; color: var(--muted); }
+
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 26px; }
+    .stat { border: 1px solid var(--line); border-radius: 6px; padding: 12px; background: var(--bg); }
+    .stat span { display: block; font-size: 12px; color: var(--muted); }
+    .stat strong { font: 800 20px/1.3 "Bricolage Grotesque", sans-serif; }
+    .stat.saved { background: var(--yellow); border-color: var(--ink); }
+    .stat.saved span { color: var(--ink); }
+
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+    .btn.primary { flex: 1 1 180px; text-align: center; }
+    .btn.disabled { opacity: 0.4; pointer-events: none; }
+
+    @media (max-width: 520px) {
+      .stat strong { font-size: 17px; }
+    }
+  
+    .field-title { display: block; font-weight: 600; font-size: 15px; margin-bottom: 8px; }
+    .presets { display: flex; flex-wrap: wrap; gap: 8px; }
+    .presets .btn { padding: 8px 14px; font-size: 14px; }
+    .presets .btn.on { background: var(--ink); color: #fff; }
+    .stage-wrap { display: flex; justify-content: center; background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 16px; }
+    .stage { position: relative; line-height: 0; touch-action: none; user-select: none; -webkit-user-select: none; }
+    .stage img { display: block; max-width: 100%; max-height: 60vh; width: auto; height: auto; border-radius: 2px; }
+    .mask { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+    .dim { position: absolute; box-shadow: 0 0 0 9999px rgba(21, 24, 30, 0.55); }
+    .cropbox { position: absolute; border: 2px solid #fff; cursor: move; touch-action: none; box-shadow: 0 0 0 1px rgba(21, 24, 30, 0.6); }
+    .h { position: absolute; width: 28px; height: 28px; touch-action: none; }
+    .h::after { content: ""; position: absolute; inset: 7px; background: #fff; border: 2px solid var(--ink); border-radius: 50%; }
+    .h.nw { left: -14px; top: -14px; cursor: nwse-resize; }
+    .h.ne { right: -14px; top: -14px; cursor: nesw-resize; }
+    .h.sw { left: -14px; bottom: -14px; cursor: nesw-resize; }
+    .h.se { right: -14px; bottom: -14px; cursor: nwse-resize; }
+  </style>
+  <meta name="twitter:image" content="https://velfile.my.id/og.png">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Crop Image - Velfile",
+    "description": "Crop an image to the part you want. Runs in your browser.",
+    "url": "https://velfile.my.id/tools/crop",
+    "applicationCategory": "UtilitiesApplication",
+    "operatingSystem": "Any (web browser)",
+    "inLanguage": "en",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Velfile",
+      "url": "https://velfile.my.id/"
+    }
+  }
+  </script>
+</head>
+<body>
+
+  <header>
+    <div class="wrap header-inner">
+      <a href="../index.html" class="brand" aria-label="Velfile home">
+        <svg viewBox="0 0 32 32" aria-hidden="true">
+          <path d="M6 3h15l6 6v20H6z" fill="#f6cf4a" stroke="#15181e" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M21 3v6h6" fill="#ffffff" stroke="#15181e" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M11 15l5 9 5-9" fill="none" stroke="#15181e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        velfile
+      </a>
+      <a href="../index.html#tools" class="back">All tools</a>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <section class="tool-head">
+      <h1 class="rise">Crop Image</h1>
+      <p class="rise" style="--d: 0.12s">Cut out the part of an image you want.</p>
+    </section>
+
+    <section class="sheet rise" style="--d: 0.2s" id="workspace">
+
+      <!-- Tahap 1: pilih file -->
+      <div id="dropView">
+        <div class="dropzone" id="dropZone" role="button" tabindex="0" aria-label="Choose an image or drop it here">
+          <svg class="dz-ico" viewBox="0 0 44 44" aria-hidden="true">
+            <path d="M10 4h17l8 8v28H10z" fill="#fff" stroke="#15181e" stroke-width="2.5" stroke-linejoin="round"/>
+            <path d="M27 4v8h8" fill="#f6cf4a" stroke="#15181e" stroke-width="2.5" stroke-linejoin="round"/>
+            <path d="M22 33V21m0 0-5 5m5-5 5 5" fill="none" stroke="#15181e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <strong>Drop an image here</strong>
+          <p>or pick one from your device</p>
+          <span class="pick">Choose image</span>
+        </div>
+        <div class="limits">JPG, PNG or WEBP. Up to 50 MB.</div>
+      </div>
+
+      <!-- Tahap 2: potong dan unduh -->
+      <div id="workView" hidden>
+        <div class="stage-wrap">
+          <div class="stage" id="stage">
+            <img id="photo" alt="Your image" draggable="false">
+            <div class="mask"><div class="dim" id="dimBox"></div></div>
+            <div class="cropbox" id="cropBox">
+              <i class="h nw" data-h="nw"></i><i class="h ne" data-h="ne"></i><i class="h sw" data-h="sw"></i><i class="h se" data-h="se"></i>
+            </div>
+          </div>
+        </div>
+        <div class="file-info">
+          <div class="file-name" id="fileName"></div>
+          <div class="file-meta" id="fileMeta"></div>
+        </div>
+
+        <div class="field">
+          <span class="field-title">Shape</span>
+          <div class="presets" id="presets">
+            <button class="btn on" type="button" data-ratio="free">Free</button>
+            <button class="btn" type="button" data-ratio="1:1">1:1</button>
+            <button class="btn" type="button" data-ratio="4:3">4:3</button>
+            <button class="btn" type="button" data-ratio="3:4">3:4</button>
+            <button class="btn" type="button" data-ratio="16:9">16:9</button>
+          </div>
+          <div class="hint">Drag the box to move it. Drag a corner to resize.</div>
+        </div>
+
+        <div class="field">
+          <label for="format" style="display:block; margin-bottom:8px;">Save as</label>
+          <select id="format">
+            <option value="same">Same as original</option>
+            <option value="image/jpeg">JPG</option>
+            <option value="image/png">PNG</option>
+            <option value="image/webp">WebP</option>
+          </select>
+        </div>
+
+        <div class="stats">
+          <div class="stat"><span>Original</span><strong id="dimBefore">-</strong></div>
+          <div class="stat"><span>Cropped</span><strong id="dimAfter">-</strong></div>
+          <div class="stat saved"><span>File size</span><strong id="sizeAfter">-</strong></div>
+        </div>
+
+        <div class="actions">
+          <a class="btn primary disabled" id="downloadBtn" download>Download</a>
+          <button class="btn" id="resetBtn" type="button">Choose another image</button>
+        </div>
+      </div>
+
+      <div class="msg" id="msg" role="status" aria-live="polite"></div>
+      <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp" hidden>
+    </section>
+
+    <section class="guide">
+      <h2>How to crop an image</h2>
+      <ol class="how">
+        <li>Choose an image or drop it on the box.</li>
+        <li>Drag the box to move it, and drag a corner to resize. Pick a Shape like 1:1 or 16:9 for a fixed ratio.</li>
+        <li>Check the size shown, then press Download.</li>
+      </ol>
+
+      <h2>Common questions</h2>
+      <div class="qa">
+        <details><summary>Does cropping lower the quality?</summary><p>The pixels you keep stay as they are. For JPG and WebP the file is saved again at high quality, so tiny differences are possible.</p></details>
+        <details><summary>Can I crop to a square for a profile photo?</summary><p>Yes. Tap 1:1, then move the box to the part you want.</p></details>
+        <details><summary>Is my image uploaded?</summary><p>No. The image is processed in your browser on your device and is not sent to a server.</p></details>
+      </div>
+
+      <h2>Related tools</h2>
+      <ul class="related">
+        <li><a href="resize.html">Resize Image</a></li>
+        <li><a href="compress.html">Compress Image</a></li>
+        <li><a href="converter.html">Image Converter</a></li>
+      </ul>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="wrap footer-inner">
+      <span>File tools, without the fuss.</span>
+      <span style="display:flex;gap:20px;flex-wrap:wrap;"><a href="../about.html">About</a><a href="../privacy.html">Privacy</a><a href="../contact.html">Contact</a><a href="../id/tools/crop.html">Bahasa Indonesia</a><a href="../index.html">velfile</a></span>
+    </div>
+  </footer>
+
+  <script src="../js/handoff.js"></script>
+  <script>
+    const MAX_SIZE = 50 * 1024 * 1024;
+    const TYPES = ["image/jpeg", "image/png", "image/webp"];
+    const EXT = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp" };
+    const MIN_PX = 28;
+
+    const $ = (id) => document.getElementById(id);
+    const dropView = $("dropView"), workView = $("workView");
+    const zone = $("dropZone"), input = $("fileInput"), msg = $("msg");
+    const photo = $("photo"), cropBox = $("cropBox"), dimBox = $("dimBox");
+    const format = $("format"), downloadBtn = $("downloadBtn");
+
+    let current = null;      // { file, img, url }
+    let outUrl = null;
+    let runId = 0;
+    let timer = null;
+    let box = { x: 0.1, y: 0.1, w: 0.8, h: 0.8 };   // pecahan dari ukuran gambar yang tampil
+    let aspect = null;       // lebar / tinggi, atau null untuk bebas
+    let drag = null;
+
+    const clamp = (v, a, b) => Math.min(Math.max(v, a), b);
+
+    /* ---------- Pilih file ---------- */
+    zone.addEventListener("click", () => input.click());
+    zone.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); input.click(); }
+    });
+    input.addEventListener("change", () => {
+      const files = Array.from(input.files);
+      input.value = "";
+      pickFile(files);
+    });
+    zone.addEventListener("dragover", (e) => { e.preventDefault(); zone.classList.add("dragging"); });
+    zone.addEventListener("dragleave", () => zone.classList.remove("dragging"));
+    zone.addEventListener("drop", (e) => {
+      e.preventDefault();
+      zone.classList.remove("dragging");
+      pickFile(Array.from(e.dataTransfer.files));
+    });
+
+    function showMsg(text, kind) { msg.className = "msg " + (kind || "info"); msg.textContent = text; }
+    function clearMsg() { msg.className = "msg"; msg.textContent = ""; }
+
+    function pickFile(files) {
+      if (!files.length) return;
+      const file = files.find((f) => TYPES.includes(f.type));
+      if (!file) return showMsg("Crop Image works with JPG, PNG and WEBP images.", "error");
+      if (file.size > MAX_SIZE) return showMsg(file.name + " is larger than 50 MB. Choose a smaller image.", "error");
+      loadFile(file, files.length > 1);
+    }
+
+    function loadFile(file, hadMore) {
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => {
+        resetCurrent();
+        current = { file, img, url };
+        $("fileName").textContent = file.name;
+        $("fileMeta").textContent = file.type.split("/")[1].toUpperCase() + ", " + img.naturalWidth + " x " + img.naturalHeight + " px, " + formatBytes(file.size);
+        $("dimBefore").textContent = img.naturalWidth + " x " + img.naturalHeight;
+        format.value = "same";
+        setPreset("free");
+        dropView.hidden = true;
+        workView.hidden = false;
+        if (hadMore) showMsg("Only the first image was used.", "info"); else clearMsg();
+        photo.onload = () => { resetBox(); render(); };
+        photo.src = url;
+      };
+      img.onerror = () => {
+        URL.revokeObjectURL(url);
+        showMsg("This image could not be read. Try another file.", "error");
+      };
+      img.src = url;
+    }
+
+    function resetCurrent() {
+      if (current) URL.revokeObjectURL(current.url);
+      if (outUrl) URL.revokeObjectURL(outUrl);
+      current = null;
+      outUrl = null;
+    }
+
+    $("resetBtn").addEventListener("click", () => {
+      runId++;
+      resetCurrent();
+      workView.hidden = true;
+      dropView.hidden = false;
+      downloadBtn.classList.add("disabled");
+      clearMsg();
+    });
+
+    /* ---------- Kotak potong ---------- */
+    function stageSize() { return { w: photo.clientWidth, h: photo.clientHeight }; }
+
+    function layout() {
+      const s = stageSize();
+      [cropBox, dimBox].forEach((el) => {
+        el.style.left = box.x * s.w + "px";
+        el.style.top = box.y * s.h + "px";
+        el.style.width = box.w * s.w + "px";
+        el.style.height = box.h * s.h + "px";
+      });
+    }
+
+    function resetBox() {
+      const s = stageSize();
+      if (!aspect) {
+        box = { x: 0.1, y: 0.1, w: 0.8, h: 0.8 };
+      } else {
+        const wPx = Math.min(s.w * 0.9, s.h * 0.9 * aspect);
+        const hPx = wPx / aspect;
+        box = { w: wPx / s.w, h: hPx / s.h, x: 0, y: 0 };
+        box.x = (1 - box.w) / 2;
+        box.y = (1 - box.h) / 2;
+      }
+      layout();
+    }
+
+    function setPreset(ratio) {
+      if (ratio === "free") aspect = null;
+      else { const [a, b] = ratio.split(":"); aspect = Number(a) / Number(b); }
+      document.querySelectorAll("#presets .btn").forEach((b) => b.classList.toggle("on", b.dataset.ratio === ratio));
+    }
+
+    document.querySelectorAll("#presets .btn").forEach((b) => {
+      b.addEventListener("click", () => { setPreset(b.dataset.ratio); resetBox(); schedule(); });
+    });
+
+    cropBox.addEventListener("pointerdown", (e) => {
+      const handle = e.target.dataset ? e.target.dataset.h : undefined;
+      drag = { mode: handle || "move", sx: e.clientX, sy: e.clientY, start: { ...box } };
+      cropBox.setPointerCapture(e.pointerId);
+      e.preventDefault();
+    });
+
+    cropBox.addEventListener("pointermove", (e) => {
+      if (!drag) return;
+      const s = stageSize();
+      const dx = (e.clientX - drag.sx) / s.w, dy = (e.clientY - drag.sy) / s.h;
+      const st = drag.start;
+      if (drag.mode === "move") {
+        box.x = clamp(st.x + dx, 0, 1 - st.w);
+        box.y = clamp(st.y + dy, 0, 1 - st.h);
+      } else {
+        resizeBox(drag.mode, st, dx, dy, s);
+      }
+      layout();
+    });
+
+    function endDrag() { if (drag) { drag = null; schedule(); } }
+    cropBox.addEventListener("pointerup", endDrag);
+    cropBox.addEventListener("pointercancel", endDrag);
+    window.addEventListener("resize", layout);
+
+    function resizeBox(mode, st, dx, dy, s) {
+      const left = mode.includes("w"), top = mode.includes("n");
+      const ax = left ? st.x + st.w : st.x;           // sudut yang tetap
+      const ay = top ? st.y + st.h : st.y;
+      const mx = clamp((left ? st.x : st.x + st.w) + dx, 0, 1);   // sudut yang digeser
+      const my = clamp((top ? st.y : st.y + st.h) + dy, 0, 1);
+      const sx = mx >= ax ? 1 : -1, sy = my >= ay ? 1 : -1;
+      const minW = MIN_PX / s.w, minH = MIN_PX / s.h;
+      const maxW = sx > 0 ? 1 - ax : ax, maxH = sy > 0 ? 1 - ay : ay;
+      let w = Math.abs(mx - ax), h = Math.abs(my - ay);
+
+      if (aspect) {
+        const hFor = (width) => (width * s.w) / (aspect * s.h);
+        const wFor = (height) => (height * aspect * s.h) / s.w;
+        h = hFor(w);
+        if (w > maxW) { w = maxW; h = hFor(w); }
+        if (h > maxH) { h = maxH; w = wFor(h); }
+        if (w < minW) { w = minW; h = hFor(w); }
+        if (h > maxH) { h = maxH; w = wFor(h); }
+      } else {
+        w = clamp(w, minW, maxW);
+        h = clamp(h, minH, maxH);
+      }
+      box = { x: sx > 0 ? ax : ax - w, y: sy > 0 ? ay : ay - h, w, h };
+    }
+
+    /* ---------- Hasil potongan ---------- */
+    format.addEventListener("change", () => render());
+    function schedule() { clearTimeout(timer); timer = setTimeout(render, 200); }
+
+    function render() {
+      if (!current) return;
+      const id = ++runId;
+      const { file, img } = current;
+      const W = img.naturalWidth, H = img.naturalHeight;
+      const sx = clamp(Math.round(box.x * W), 0, W - 1);
+      const sy = clamp(Math.round(box.y * H), 0, H - 1);
+      const sw = clamp(Math.round(box.w * W), 1, W - sx);
+      const sh = clamp(Math.round(box.h * H), 1, H - sy);
+      const outType = format.value === "same" ? file.type : format.value;
+
+      const canvas = document.createElement("canvas");
+      canvas.width = sw;
+      canvas.height = sh;
+      const ctx = canvas.getContext("2d");
+      if (outType === "image/jpeg") {
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, sw, sh);
+      }
+      ctx.drawImage(img, sx, sy, sw, sh, 0, 0, sw, sh);
+
+      canvas.toBlob((blob) => {
+        if (id !== runId || !current) return;
+        if (!blob) return showMsg("Your browser could not crop this image.", "error");
+
+        if (outUrl) URL.revokeObjectURL(outUrl);
+        outUrl = URL.createObjectURL(blob);
+
+        const base = file.name.replace(/\.[^.]+$/, "");
+        downloadBtn.href = outUrl;
+        downloadBtn.download = base + "-cropped." + (EXT[blob.type] || "jpg");
+        downloadBtn.classList.remove("disabled");
+        $("dimAfter").textContent = sw + " x " + sh;
+        $("sizeAfter").textContent = formatBytes(blob.size);
+
+        if (blob.type !== outType) {
+          showMsg("Your browser saved this as " + EXT[blob.type].toUpperCase() + " instead. Try another format.", "info");
+        } else {
+          clearMsg();
+        }
+      }, outType, 0.92);
+    }
+
+    function formatBytes(bytes) {
+      if (bytes === 0) return "0 B";
+      const units = ["B", "KB", "MB", "GB"];
+      const i = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1);
+      return parseFloat((bytes / Math.pow(1024, i)).toFixed(1)) + " " + units[i];
+    }
+
+    /* ---------- File kiriman dari halaman utama ---------- */
+    if (window.VelfileHandoff) {
+      VelfileHandoff.take().then((files) => {
+        if (files && files.length) pickFile(files);
+      });
+    }
+  </script>
+
+</body>
+</html>

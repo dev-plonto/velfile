@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6911711885696253"
+     crossorigin="anonymous"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Compress PDF: Velfile</title>
+  <meta name="description" content="Make a PDF smaller so it is easy to email or upload. Runs in your browser.">
+  <meta name="theme-color" content="#f6f7f9">
+  <link rel="canonical" href="https://velfile.my.id/tools/compress-pdf">
+  <link rel="alternate" hreflang="en" href="https://velfile.my.id/tools/compress-pdf">
+  <link rel="alternate" hreflang="id" href="https://velfile.my.id/id/tools/compress-pdf">
+  <link rel="alternate" hreflang="x-default" href="https://velfile.my.id/tools/compress-pdf">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Compress PDF: Velfile">
+  <meta property="og:description" content="Make a PDF smaller so it is easy to email or upload. Runs in your browser.">
+  <meta property="og:url" content="https://velfile.my.id/tools/compress-pdf">
+  <meta property="og:image" content="https://velfile.my.id/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" type="image/png" href="/favicon.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="../css/tool.css">
+
+  <style>
+    [hidden] { display: none !important; }
+
+    /* Kotak upload */
+    @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+    .dropzone { border: 2px dashed var(--line); border-radius: 6px; min-height: 240px; padding: 28px 18px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; cursor: pointer; transition: border-color 0.2s, background 0.2s, transform 0.2s; }
+    .dropzone:hover { border-color: var(--ink); }
+    .dropzone.dragging { border-color: var(--ink); border-style: solid; background: var(--yellow-soft); transform: scale(1.015); }
+    .dz-ico { width: 46px; height: 46px; margin-bottom: 14px; animation: bob 3s ease-in-out infinite; }
+    .dropzone.dragging .dz-ico { animation: none; transform: translateY(-8px) rotate(-5deg); }
+    .dropzone strong { font-size: 18px; }
+    .dropzone p { color: var(--muted); font-size: 14px; margin-bottom: 16px; }
+    .pick { background: var(--ink); color: #fff; padding: 10px 20px; border-radius: 6px; font-size: 14px; font-weight: 600; }
+    .limits { margin-top: 14px; font-size: 13px; color: var(--muted); }
+
+    /* Pesan */
+    .msg { margin-top: 14px; padding: 12px 14px; border-radius: 6px; font-size: 14px; font-weight: 500; animation: rise 0.3s ease both; }
+    .msg:empty { display: none; }
+    .msg.error { background: var(--err-bg); color: var(--err); border: 1px solid #e3b5b1; }
+    .msg.info { background: var(--yellow-soft); border: 1px solid var(--yellow); }
+
+    /* Info file */
+    .doc-row { display: flex; align-items: center; gap: 14px; padding-bottom: 14px; border-bottom: 2px solid var(--ink); }
+    .doc { flex: none; width: 42px; height: 50px; display: grid; place-items: end center; padding-bottom: 6px; border-radius: 3px; background: var(--ink); color: #fff; font: 800 11px/1 "Bricolage Grotesque", sans-serif; }
+    .doc-row .info { min-width: 0; }
+    .file-name { font-weight: 600; word-break: break-word; }
+    .file-meta { color: var(--muted); font-size: 13px; }
+
+    /* Pengaturan */
+    .field { margin-top: 24px; }
+    .field > label { display: block; font-weight: 600; font-size: 15px; margin-bottom: 8px; }
+    select { width: 100%; font: inherit; font-size: 16px; padding: 12px; border: 2px solid var(--ink); border-radius: 8px; background: var(--paper); color: var(--ink); }
+    .note { margin-top: 14px; padding: 12px 14px; border-radius: 6px; font-size: 14px; background: var(--yellow-soft); border: 1px solid var(--yellow); }
+
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
+    .btn.primary { flex: 1 1 180px; text-align: center; }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn.busy:disabled { opacity: 0.6; cursor: wait; }
+
+    /* Hasil */
+    .results { margin-top: 24px; padding-top: 20px; border-top: 2px solid var(--ink); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; animation: rise 0.3s ease both; }
+    .results-text { font-weight: 600; }
+    .results .btn.primary { flex: none; }
+  </style>
+  <meta name="twitter:image" content="https://velfile.my.id/og.png">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Compress PDF - Velfile",
+    "description": "Make a PDF smaller so it is easy to email or upload. Runs in your browser.",
+    "url": "https://velfile.my.id/tools/compress-pdf",
+    "applicationCategory": "UtilitiesApplication",
+    "operatingSystem": "Any (web browser)",
+    "inLanguage": "en",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Velfile",
+      "url": "https://velfile.my.id/"
+    }
+  }
+  </script>
+</head>
+<body>
+
+  <header>
+    <div class="wrap header-inner">
+      <a href="../index.html" class="brand" aria-label="Velfile home">
+        <svg viewBox="0 0 32 32" aria-hidden="true">
+          <path d="M6 3h15l6 6v20H6z" fill="#f6cf4a" stroke="#15181e" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M21 3v6h6" fill="#ffffff" stroke="#15181e" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M11 15l5 9 5-9" fill="none" stroke="#15181e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        velfile
+      </a>
+      <a href="../index.html#tools" class="back">All tools</a>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <section class="tool-head">
+      <h1 class="rise">Compress PDF</h1>
+      <p class="rise" style="--d: 0.12s">Make a PDF smaller so it is easy to send or upload.</p>
+    </section>
+
+    <section class="sheet rise" style="--d: 0.2s" id="workspace">
+
+      <!-- Tahap 1: pilih PDF -->
+      <div id="dropView">
+        <div class="dropzone" id="dropZone" role="button" tabindex="0" aria-label="Choose a PDF file or drop it here">
+          <svg class="dz-ico" viewBox="0 0 44 44" aria-hidden="true">
+            <path d="M10 4h17l8 8v28H10z" fill="#fff" stroke="#15181e" stroke-width="2.5" stroke-linejoin="round"/>
+            <path d="M27 4v8h8" fill="#f6cf4a" stroke="#15181e" stroke-width="2.5" stroke-linejoin="round"/>
+            <path d="M22 33V21m0 0-5 5m5-5 5 5" fill="none" stroke="#15181e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <strong>Drop a PDF here</strong>
+          <p>or pick one from your device</p>
+          <span class="pick">Choose PDF</span>
+        </div>
+        <div class="limits">PDF files only. Up to 100 MB and 100 pages.</div>
+      </div>
+
+      <!-- Tahap 2: atur dan kompres -->
+      <div id="workView" hidden>
+        <div class="doc-row">
+          <div class="doc">PDF</div>
+          <div class="info">
+            <div class="file-name" id="fileName"></div>
+            <div class="file-meta" id="fileMeta"></div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="level">Compression level</label>
+          <select id="level">
+            <option value="light">Light (best quality)</option>
+            <option value="balanced" selected>Balanced</option>
+            <option value="max">Maximum (smallest file)</option>
+          </select>
+        </div>
+
+        <p class="note">Compressing turns each page into an image. The text can no longer be selected or searched.</p>
+
+        <div class="actions">
+          <button class="btn primary" id="compressBtn" type="button">Compress PDF</button>
+          <button class="btn" id="resetBtn" type="button">Choose another PDF</button>
+        </div>
+
+        <div class="results" id="results" hidden>
+          <p class="results-text" id="resultsText"></p>
+          <a class="btn primary" id="downloadBtn" href="#">Download PDF</a>
+        </div>
+      </div>
+
+      <div class="msg" id="msg" role="status" aria-live="polite"></div>
+      <input type="file" id="fileInput" accept="application/pdf,.pdf" hidden>
+    </section>
+
+    <section class="guide">
+      <h2>How to compress a PDF</h2>
+      <ol class="how">
+        <li>Choose a PDF.</li>
+        <li>Pick a compression level. Balanced works for most files.</li>
+        <li>Press Compress PDF, then download the smaller file.</li>
+      </ol>
+
+      <h2>Common questions</h2>
+      <div class="qa">
+        <details><summary>Will the text still be selectable?</summary><p>No. Each page is saved as an image, so you can no longer select, copy or search the text. Keep the original if you need that.</p></details>
+        <details><summary>Why did my PDF not get smaller?</summary><p>A PDF that is mostly text is already small, and turning it into images can make it bigger. When that happens, Velfile tells you and does not offer a download.</p></details>
+        <details><summary>How many pages can I compress?</summary><p>Up to 100 pages at a time. For a longer PDF, split it first with Split PDF.</p></details>
+        <details><summary>Is my file uploaded?</summary><p>No. The file is processed in your browser on your device and is not sent to a server.</p></details>
+      </div>
+
+      <h2>Related tools</h2>
+      <ul class="related">
+        <li><a href="split-pdf.html">Split PDF</a></li>
+        <li><a href="merge-pdf.html">Merge PDF</a></li>
+        <li><a href="pdf-to-jpg.html">PDF to JPG</a></li>
+      </ul>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="wrap footer-inner">
+      <span>File tools, without the fuss.</span>
+      <span style="display:flex;gap:20px;flex-wrap:wrap;"><a href="../about.html">About</a><a href="../privacy.html">Privacy</a><a href="../contact.html">Contact</a><a href="../id/tools/compress-pdf.html">Bahasa Indonesia</a><a href="../index.html">velfile</a></span>
+    </div>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" integrity="sha384-/1qUCSGwTur9vjf/z9lmu/eCUYbpOTgSjmpbMQZ1/CtX2v/WcAIKqRv+U1DUCG6e" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js" integrity="sha384-weMABwrltA6jWR8DDe9Jp5blk+tZQh7ugpCsF3JwSA53WZM9/14PjS5LAJNHNjAI" crossorigin="anonymous"></script>
+  <script src="../js/handoff.js"></script>
+  <script>
+    const T = {
+      "engine": "The PDF engine could not load. Check your connection and reload the page.",
+      "needPdf": "Compress PDF works with PDF files.",
+      "tooBig": "{name} is larger than 100 MB. Choose a smaller PDF.",
+      "reading": "Reading your file...",
+      "unreadable": "{name} is password protected or could not be read.",
+      "tooManyPages": "{name} has {n} pages. Compress PDF handles up to 100 pages at a time. Split it first with Split PDF.",
+      "onlyFirst": "Only the first PDF was used.",
+      "pageOne": " page, ",
+      "pageMany": " pages, ",
+      "working": "Compressing {i} of {n}...",
+      "btn": "Compress PDF",
+      "done": "Done. {orig} is now {now}, {pct}% smaller.",
+      "noGain": "This PDF is already small at this level, so compressing would not help. Try a stronger level.",
+      "noGainMax": "This PDF is already about as small as this tool can make it.",
+      "fail": "Something went wrong while compressing. Try a stronger level or a PDF with fewer pages."
+    };
+
+    const MAX_SIZE = 100 * 1024 * 1024;
+    const MAX_PAGES = 100;     // halaman per proses
+    const MAX_SIDE = 4000;     // sisi terpanjang gambar (piksel)
+    const WORKER_URL = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+
+    // Tiap tingkat: kerapatan gambar (dpi) dan kualitas JPEG
+    const LEVELS = {
+      light:    { dpi: 150, q: 0.85 },
+      balanced: { dpi: 110, q: 0.70 },
+      max:      { dpi: 80,  q: 0.55 }
+    };
+
+    const $ = (id) => document.getElementById(id);
+    const dropView = $("dropView"), workView = $("workView");
+    const zone = $("dropZone"), input = $("fileInput"), msg = $("msg");
+    const compressBtn = $("compressBtn"), results = $("results"), downloadBtn = $("downloadBtn");
+
+    let current = null;      // { file, name, total, pdf }
+    let outputUrl = null;    // alamat sementara hasil kompresi
+    let workerReady = false;
+
+    const fill = (s, vars) => s.replace(/\{(\w+)\}/g, (_, k) => (k in vars ? vars[k] : "{" + k + "}"));
+
+    /* ---------- Pilih PDF ---------- */
+    zone.addEventListener("click", () => input.click());
+    zone.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); input.click(); }
+    });
+    input.addEventListener("change", () => {
+      const files = Array.from(input.files);
+      input.value = "";
+      pickFile(files);
+    });
+    zone.addEventListener("dragover", (e) => { e.preventDefault(); zone.classList.add("dragging"); });
+    zone.addEventListener("dragleave", () => zone.classList.remove("dragging"));
+    zone.addEventListener("drop", (e) => {
+      e.preventDefault();
+      zone.classList.remove("dragging");
+      pickFile(Array.from(e.dataTransfer.files));
+    });
+
+    function showMsg(text, kind) { msg.className = "msg " + (kind || "info"); msg.textContent = text; }
+    function clearMsg() { msg.className = "msg"; msg.textContent = ""; }
+    function isPdf(f) { return f.type === "application/pdf" || /\.pdf$/i.test(f.name); }
+
+    // Pekerja pdf.js dimuat lewat blob agar aman dari batasan lintas-situs
+    async function setupWorker() {
+      if (workerReady) return;
+      try {
+        const res = await fetch(WORKER_URL);
+        const code = await res.text();
+        pdfjsLib.GlobalWorkerOptions.workerSrc = URL.createObjectURL(new Blob([code], { type: "text/javascript" }));
+      } catch (e) {
+        pdfjsLib.GlobalWorkerOptions.workerSrc = WORKER_URL;
+      }
+      workerReady = true;
+    }
+
+    async function pickFile(files) {
+      if (!files.length) return;
+      if (!window.pdfjsLib || !window.PDFLib) return showMsg(T.engine, "error");
+      const file = files.find(isPdf);
+      if (!file) return showMsg(T.needPdf, "error");
+      if (file.size > MAX_SIZE) return showMsg(fill(T.tooBig, { name: file.name }), "error");
+
+      showMsg(T.reading, "info");
+      let pdf;
+      try {
+        await setupWorker();
+        const data = new Uint8Array(await file.arrayBuffer());
+        pdf = await pdfjsLib.getDocument({ data }).promise;
+      } catch (e) {
+        return showMsg(fill(T.unreadable, { name: file.name }), "error");
+      }
+
+      if (pdf.numPages > MAX_PAGES) {
+        const n = pdf.numPages;
+        pdf.destroy();
+        return showMsg(fill(T.tooManyPages, { name: file.name, n: n }), "error");
+      }
+
+      if (current) current.pdf.destroy();
+      current = { file, name: file.name.replace(/\.[^.]+$/, ""), total: pdf.numPages, pdf };
+
+      $("fileName").textContent = file.name;
+      $("fileMeta").textContent = current.total + (current.total === 1 ? T.pageOne : T.pageMany) + formatBytes(file.size);
+      clearResult();
+
+      dropView.hidden = true;
+      workView.hidden = false;
+      if (files.filter(isPdf).length > 1) showMsg(T.onlyFirst, "info"); else clearMsg();
+    }
+
+    $("resetBtn").addEventListener("click", () => {
+      if (current) { current.pdf.destroy(); current = null; }
+      clearResult();
+      workView.hidden = true;
+      dropView.hidden = false;
+      clearMsg();
+    });
+
+    function clearResult() {
+      if (outputUrl) { URL.revokeObjectURL(outputUrl); outputUrl = null; }
+      downloadBtn.removeAttribute("href");
+      results.hidden = true;
+    }
+
+    $("level").addEventListener("change", () => { clearResult(); clearMsg(); });
+
+    /* ---------- Kompres ---------- */
+    compressBtn.addEventListener("click", async () => {
+      if (!current) return;
+      compressBtn.disabled = true;
+      compressBtn.classList.add("busy");
+      clearResult();
+      clearMsg();
+
+      const levelKey = $("level").value;
+      const level = LEVELS[levelKey];
+      try {
+        const out = await PDFLib.PDFDocument.create();
+
+        for (let i = 1; i <= current.total; i++) {
+          compressBtn.textContent = fill(T.working, { i: i, n: current.total });
+          const page = await current.pdf.getPage(i);
+
+          const base = page.getViewport({ scale: 1 });   // ukuran halaman dalam poin
+          const scale = Math.min(level.dpi / 72, MAX_SIDE / Math.max(base.width, base.height));
+          const viewport = page.getViewport({ scale });
+
+          const canvas = document.createElement("canvas");
+          canvas.width = Math.max(1, Math.floor(viewport.width));
+          canvas.height = Math.max(1, Math.floor(viewport.height));
+          const ctx = canvas.getContext("2d");
+          ctx.fillStyle = "#ffffff";
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          await page.render({ canvasContext: ctx, viewport }).promise;
+
+          const blob = await new Promise((r) => canvas.toBlob(r, "image/jpeg", level.q));
+          canvas.width = canvas.height = 0;
+          if (!blob) throw new Error("encode failed");
+
+          const img = await out.embedJpg(new Uint8Array(await blob.arrayBuffer()));
+          const outPage = out.addPage([base.width, base.height]);
+          outPage.drawImage(img, { x: 0, y: 0, width: base.width, height: base.height });
+          page.cleanup();
+        }
+
+        out.setProducer("Velfile");
+        out.setCreator("Velfile");
+        const bytes = await out.save();
+        const result = new Blob([bytes], { type: "application/pdf" });
+
+        // Kalau hasilnya tidak lebih kecil, jangan tawarkan unduhan
+        if (result.size >= current.file.size * 0.95) {
+          showMsg(levelKey === "max" ? T.noGainMax : T.noGain, "info");
+        } else {
+          outputUrl = URL.createObjectURL(result);
+          const pct = Math.round((1 - result.size / current.file.size) * 100);
+          $("resultsText").textContent = fill(T.done, {
+            orig: formatBytes(current.file.size),
+            now: formatBytes(result.size),
+            pct: pct
+          });
+          downloadBtn.href = outputUrl;
+          downloadBtn.download = current.name + "-compressed.pdf";
+          results.hidden = false;
+        }
+      } catch (err) {
+        clearResult();
+        showMsg(T.fail, "error");
+      } finally {
+        compressBtn.classList.remove("busy");
+        compressBtn.textContent = T.btn;
+        compressBtn.disabled = false;
+      }
+    });
+
+    function formatBytes(bytes) {
+      if (bytes === 0) return "0 B";
+      const units = ["B", "KB", "MB", "GB"];
+      const i = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1);
+      return parseFloat((bytes / Math.pow(1024, i)).toFixed(1)) + " " + units[i];
+    }
+
+    /* ---------- File kiriman dari halaman utama ---------- */
+    if (window.VelfileHandoff) {
+      VelfileHandoff.take().then((files) => {
+        if (files && files.length) pickFile(files);
+      });
+    }
+  </script>
+
+</body>
+</html>

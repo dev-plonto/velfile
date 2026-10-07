@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6911711885696253"
+     crossorigin="anonymous"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Split PDF: Velfile</title>
+  <meta name="description" content="Pull the pages you need out of a PDF into a new document. Runs in your browser.">
+  <meta name="theme-color" content="#f6f7f9">
+  <link rel="canonical" href="https://velfile.my.id/tools/split-pdf">
+  <link rel="alternate" hreflang="en" href="https://velfile.my.id/tools/split-pdf">
+  <link rel="alternate" hreflang="id" href="https://velfile.my.id/id/tools/split-pdf">
+  <link rel="alternate" hreflang="x-default" href="https://velfile.my.id/tools/split-pdf">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Split PDF: Velfile">
+  <meta property="og:description" content="Pull the pages you need out of a PDF into a new document. Runs in your browser.">
+  <meta property="og:url" content="https://velfile.my.id/tools/split-pdf">
+  <meta property="og:image" content="https://velfile.my.id/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" type="image/png" href="/favicon.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="../css/tool.css">
+
+  <style>
+    [hidden] { display: none !important; }
+
+    /* Kotak upload */
+    @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+    .dropzone { border: 2px dashed var(--line); border-radius: 6px; min-height: 240px; padding: 28px 18px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; cursor: pointer; transition: border-color 0.2s, background 0.2s, transform 0.2s; }
+    .dropzone:hover { border-color: var(--ink); }
+    .dropzone.dragging { border-color: var(--ink); border-style: solid; background: var(--yellow-soft); transform: scale(1.015); }
+    .dz-ico { width: 46px; height: 46px; margin-bottom: 14px; animation: bob 3s ease-in-out infinite; }
+    .dropzone.dragging .dz-ico { animation: none; transform: translateY(-8px) rotate(-5deg); }
+    .dropzone strong { font-size: 18px; }
+    .dropzone p { color: var(--muted); font-size: 14px; margin-bottom: 16px; }
+    .pick { background: var(--ink); color: #fff; padding: 10px 20px; border-radius: 6px; font-size: 14px; font-weight: 600; }
+    .limits { margin-top: 14px; font-size: 13px; color: var(--muted); }
+
+    /* Pesan */
+    .msg { margin-top: 14px; padding: 12px 14px; border-radius: 6px; font-size: 14px; font-weight: 500; animation: rise 0.3s ease both; }
+    .msg:empty { display: none; }
+    .msg.error { background: var(--err-bg); color: var(--err); border: 1px solid #e3b5b1; }
+    .msg.info { background: var(--yellow-soft); border: 1px solid var(--yellow); }
+
+    /* Info file */
+    .doc-row { display: flex; align-items: center; gap: 14px; padding-bottom: 14px; border-bottom: 2px solid var(--ink); }
+    .doc { flex: none; width: 42px; height: 50px; display: grid; place-items: end center; padding-bottom: 6px; border-radius: 3px; background: var(--ink); color: #fff; font: 800 11px/1 "Bricolage Grotesque", sans-serif; }
+    .doc-row .info { min-width: 0; }
+    .file-name { font-weight: 600; word-break: break-word; }
+    .file-meta { color: var(--muted); font-size: 13px; }
+
+    /* Pilih halaman */
+    .field { margin-top: 24px; }
+    .field > label, .field-title { display: block; font-weight: 600; font-size: 15px; margin-bottom: 8px; }
+    input[type="text"] { width: 100%; font: inherit; font-size: 16px; padding: 12px; border: 2px solid var(--ink); border-radius: 8px; background: var(--paper); color: var(--ink); }
+    input[type="text"].bad { border-color: var(--err); }
+    .status { margin-top: 8px; font-size: 14px; color: var(--muted); min-height: 1.6em; }
+    .status.bad { color: var(--err); font-weight: 500; }
+    .status.good { color: var(--ok); font-weight: 500; }
+    .presets { display: flex; flex-wrap: wrap; gap: 8px; }
+    .presets .btn { padding: 8px 14px; font-size: 14px; }
+
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
+    .btn.primary { flex: 1 1 180px; text-align: center; }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn.busy:disabled { opacity: 0.6; cursor: wait; }
+
+    .result { margin-top: 20px; padding: 16px; border: 2px solid var(--ink); border-radius: 6px; background: var(--yellow-soft); animation: rise 0.3s ease both; }
+    .result p { font-weight: 600; margin-bottom: 12px; }
+    .result .btn { display: block; text-align: center; }
+  </style>
+  <meta name="twitter:image" content="https://velfile.my.id/og.png">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Split PDF - Velfile",
+    "description": "Pull the pages you need out of a PDF into a new document. Runs in your browser.",
+    "url": "https://velfile.my.id/tools/split-pdf",
+    "applicationCategory": "UtilitiesApplication",
+    "operatingSystem": "Any (web browser)",
+    "inLanguage": "en",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Velfile",
+      "url": "https://velfile.my.id/"
+    }
+  }
+  </script>
+</head>
+<body>
+
+  <header>
+    <div class="wrap header-inner">
+      <a href="../index.html" class="brand" aria-label="Velfile home">
+        <svg viewBox="0 0 32 32" aria-hidden="true">
+          <path d="M6 3h15l6 6v20H6z" fill="#f6cf4a" stroke="#15181e" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M21 3v6h6" fill="#ffffff" stroke="#15181e" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M11 15l5 9 5-9" fill="none" stroke="#15181e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        velfile
+      </a>
+      <a href="../index.html#tools" class="back">All tools</a>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <section class="tool-head">
+      <h1 class="rise">Split PDF</h1>
+      <p class="rise" style="--d: 0.12s">Pull the pages you need into a new PDF.</p>
+    </section>
+
+    <section class="sheet rise" style="--d: 0.2s" id="workspace">
+
+      <!-- Tahap 1: pilih PDF -->
+      <div id="dropView">
+        <div class="dropzone" id="dropZone" role="button" tabindex="0" aria-label="Choose a PDF file or drop it here">
+          <svg class="dz-ico" viewBox="0 0 44 44" aria-hidden="true">
+            <path d="M10 4h17l8 8v28H10z" fill="#fff" stroke="#15181e" stroke-width="2.5" stroke-linejoin="round"/>
+            <path d="M27 4v8h8" fill="#f6cf4a" stroke="#15181e" stroke-width="2.5" stroke-linejoin="round"/>
+            <path d="M22 33V21m0 0-5 5m5-5 5 5" fill="none" stroke="#15181e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <strong>Drop a PDF here</strong>
+          <p>or pick one from your device</p>
+          <span class="pick">Choose PDF</span>
+        </div>
+        <div class="limits">PDF files only. Up to 100 MB.</div>
+      </div>
+
+      <!-- Tahap 2: pilih halaman -->
+      <div id="workView" hidden>
+        <div class="doc-row">
+          <div class="doc">PDF</div>
+          <div class="info">
+            <div class="file-name" id="fileName"></div>
+            <div class="file-meta" id="fileMeta"></div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="rangeInput">Pages to extract</label>
+          <input type="text" id="rangeInput" inputmode="text" autocomplete="off" spellcheck="false" placeholder="For example 1-3, 5, 8-10">
+          <div class="status" id="rangeStatus" role="status" aria-live="polite"></div>
+        </div>
+
+        <div class="field">
+          <span class="field-title">Quick pick</span>
+          <div class="presets">
+            <button class="btn" type="button" data-pick="first">First page</button>
+            <button class="btn" type="button" data-pick="last">Last page</button>
+            <button class="btn" type="button" data-pick="all">All pages</button>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="btn primary" id="extractBtn" type="button" disabled>Extract pages</button>
+          <button class="btn" id="resetBtn" type="button">Choose another PDF</button>
+        </div>
+
+        <div class="result" id="result" hidden>
+          <p id="resultText"></p>
+          <a class="btn primary" id="downloadBtn" download="pages.pdf">Download PDF</a>
+        </div>
+      </div>
+
+      <div class="msg" id="msg" role="status" aria-live="polite"></div>
+      <input type="file" id="fileInput" accept="application/pdf,.pdf" hidden>
+    </section>
+
+    <section class="guide">
+      <h2>How to split a PDF</h2>
+      <ol class="how">
+        <li>Choose a PDF.</li>
+        <li>Type the pages you want, like 1-3, 5, 8-10, or use Quick pick.</li>
+        <li>Press Extract pages, then Download PDF.</li>
+      </ol>
+
+      <h2>Common questions</h2>
+      <div class="qa">
+        <details><summary>Can I change the page order?</summary><p>Yes. Pages are taken in the order you type them, so 5, 1 starts with page 5.</p></details>
+        <details><summary>Does the original change?</summary><p>No. You get a new PDF and the original file stays as it is.</p></details>
+        <details><summary>Is my file uploaded?</summary><p>No. The file is processed in your browser on your device and is not sent to a server.</p></details>
+      </div>
+
+      <h2>Related tools</h2>
+      <ul class="related">
+        <li><a href="merge-pdf.html">Merge PDF</a></li>
+        <li><a href="rotate-pdf.html">Rotate PDF</a></li>
+        <li><a href="pdf-to-jpg.html">PDF to JPG</a></li>
+        <li><a href="compress-pdf.html">Compress PDF</a></li>
+      </ul>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="wrap footer-inner">
+      <span>File tools, without the fuss.</span>
+      <span style="display:flex;gap:20px;flex-wrap:wrap;"><a href="../about.html">About</a><a href="../privacy.html">Privacy</a><a href="../contact.html">Contact</a><a href="../id/tools/split-pdf.html">Bahasa Indonesia</a><a href="../index.html">velfile</a></span>
+    </div>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js" integrity="sha384-weMABwrltA6jWR8DDe9Jp5blk+tZQh7ugpCsF3JwSA53WZM9/14PjS5LAJNHNjAI" crossorigin="anonymous"></script>
+  <script src="../js/handoff.js"></script>
+  <script>
+    const MAX_SIZE = 100 * 1024 * 1024;
+
+    const $ = (id) => document.getElementById(id);
+    const dropView = $("dropView"), workView = $("workView");
+    const zone = $("dropZone"), input = $("fileInput"), msg = $("msg");
+    const rangeInput = $("rangeInput"), rangeStatus = $("rangeStatus");
+    const extractBtn = $("extractBtn");
+    const result = $("result"), downloadBtn = $("downloadBtn");
+
+    let current = null;      // { file, pages }
+    let selected = null;     // daftar indeks halaman (mulai dari 0) yang valid
+    let outUrl = null;
+
+    /* ---------- Pilih PDF ---------- */
+    zone.addEventListener("click", () => input.click());
+    zone.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); input.click(); }
+    });
+    input.addEventListener("change", () => {
+      const files = Array.from(input.files);
+      input.value = "";
+      pickFile(files);
+    });
+    zone.addEventListener("dragover", (e) => { e.preventDefault(); zone.classList.add("dragging"); });
+    zone.addEventListener("dragleave", () => zone.classList.remove("dragging"));
+    zone.addEventListener("drop", (e) => {
+      e.preventDefault();
+      zone.classList.remove("dragging");
+      pickFile(Array.from(e.dataTransfer.files));
+    });
+
+    function showMsg(text, kind) {
+      msg.className = "msg " + (kind || "info");
+      msg.textContent = text;
+    }
+    function clearMsg() { msg.className = "msg"; msg.textContent = ""; }
+
+    function isPdf(f) {
+      return f.type === "application/pdf" || /\.pdf$/i.test(f.name);
+    }
+
+    async function pickFile(files) {
+      if (!files.length) return;
+      if (!window.PDFLib) {
+        return showMsg("The PDF engine could not load. Check your connection and reload the page.", "error");
+      }
+      const file = files.find(isPdf);
+      if (!file) return showMsg("Split PDF works with PDF files.", "error");
+      if (file.size > MAX_SIZE) return showMsg(file.name + " is larger than 100 MB. Choose a smaller PDF.", "error");
+
+      showMsg("Reading your file...", "info");
+      try {
+        const doc = await PDFLib.PDFDocument.load(await file.arrayBuffer());
+        current = { file, pages: doc.getPageCount() };
+      } catch (e) {
+        return showMsg(file.name + " is password protected or could not be read.", "error");
+      }
+
+      $("fileName").textContent = file.name;
+      $("fileMeta").textContent = current.pages + (current.pages === 1 ? " page, " : " pages, ") + formatBytes(file.size);
+      rangeInput.value = "1";
+      invalidate();
+      validate();
+
+      dropView.hidden = true;
+      workView.hidden = false;
+      if (files.filter(isPdf).length > 1) showMsg("Only the first PDF was used.", "info"); else clearMsg();
+    }
+
+    $("resetBtn").addEventListener("click", () => {
+      current = null;
+      selected = null;
+      invalidate();
+      workView.hidden = true;
+      dropView.hidden = false;
+      clearMsg();
+    });
+
+    function invalidate() {
+      result.hidden = true;
+      if (outUrl) { URL.revokeObjectURL(outUrl); outUrl = null; }
+    }
+
+    /* ---------- Pilih halaman ---------- */
+    function parseRanges(text, total) {
+      const parts = text.split(",").map((s) => s.trim()).filter(Boolean);
+      if (!parts.length) return { error: "Enter the pages you want, for example 1-3, 5." };
+
+      const out = [];
+      for (const p of parts) {
+        const m = p.match(/^(\d+)(?:\s*-\s*(\d+))?$/);
+        if (!m) return { error: '"' + p + '" is not a valid page or range.' };
+        const a = Number(m[1]);
+        const b = m[2] ? Number(m[2]) : a;
+        if (a < 1 || b < 1 || a > total || b > total) return { error: "Pages must be between 1 and " + total + "." };
+        if (a > b) return { error: '"' + p + '" goes backwards. Write it as ' + b + "-" + a + "." };
+        for (let i = a; i <= b; i++) out.push(i - 1);
+      }
+      return { pages: out };
+    }
+
+    function validate() {
+      if (!current) return;
+      const res = parseRanges(rangeInput.value, current.pages);
+      if (res.error) {
+        selected = null;
+        rangeInput.classList.add("bad");
+        rangeStatus.className = "status bad";
+        rangeStatus.textContent = res.error;
+      } else {
+        selected = res.pages;
+        rangeInput.classList.remove("bad");
+        rangeStatus.className = "status good";
+        rangeStatus.textContent = res.pages.length + (res.pages.length === 1 ? " page" : " pages") + " will be extracted (of " + current.pages + ").";
+      }
+      extractBtn.disabled = !selected;
+    }
+
+    rangeInput.addEventListener("input", () => { invalidate(); validate(); });
+
+    document.querySelectorAll("[data-pick]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        if (!current) return;
+        const k = btn.dataset.pick;
+        rangeInput.value = k === "first" ? "1" : k === "last" ? String(current.pages) : "1-" + current.pages;
+        invalidate();
+        validate();
+      });
+    });
+
+    /* ---------- Ekstrak ---------- */
+    extractBtn.addEventListener("click", async () => {
+      if (!current || !selected) return;
+      if (!window.PDFLib) {
+        return showMsg("The PDF engine could not load. Check your connection and reload the page.", "error");
+      }
+      extractBtn.disabled = true;
+      extractBtn.classList.add("busy");
+      extractBtn.textContent = "Extracting...";
+      invalidate();
+      clearMsg();
+
+      try {
+        const { PDFDocument } = PDFLib;
+        const src = await PDFDocument.load(await current.file.arrayBuffer());
+        const out = await PDFDocument.create();
+        const pages = await out.copyPages(src, selected);
+        pages.forEach((p) => out.addPage(p));
+
+        const bytes = await out.save();
+        const blob = new Blob([bytes], { type: "application/pdf" });
+        outUrl = URL.createObjectURL(blob);
+
+        const base = current.file.name.replace(/\.[^.]+$/, "");
+        downloadBtn.href = outUrl;
+        downloadBtn.download = base + "-pages.pdf";
+        $("resultText").textContent = "Your PDF is ready: " + selected.length + (selected.length === 1 ? " page, " : " pages, ") + formatBytes(blob.size);
+        result.hidden = false;
+      } catch (err) {
+        showMsg("Something went wrong while extracting. Try a smaller PDF.", "error");
+      } finally {
+        extractBtn.classList.remove("busy");
+        extractBtn.textContent = "Extract pages";
+        extractBtn.disabled = !selected;
+      }
+    });
+
+    function formatBytes(bytes) {
+      if (bytes === 0) return "0 B";
+      const units = ["B", "KB", "MB", "GB"];
+      const i = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1);
+      return parseFloat((bytes / Math.pow(1024, i)).toFixed(1)) + " " + units[i];
+    }
+
+    /* ---------- File kiriman dari halaman utama ---------- */
+    if (window.VelfileHandoff) {
+      VelfileHandoff.take().then((files) => {
+        if (files && files.length) pickFile(files);
+      });
+    }
+  </script>
+
+</body>
+</html>

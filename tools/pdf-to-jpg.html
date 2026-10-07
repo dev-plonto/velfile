@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6911711885696253"
+     crossorigin="anonymous"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PDF to JPG: Velfile</title>
+  <meta name="description" content="Turn the pages of a PDF into JPG images. Runs in your browser.">
+  <meta name="theme-color" content="#f6f7f9">
+  <link rel="canonical" href="https://velfile.my.id/tools/pdf-to-jpg">
+  <link rel="alternate" hreflang="en" href="https://velfile.my.id/tools/pdf-to-jpg">
+  <link rel="alternate" hreflang="id" href="https://velfile.my.id/id/tools/pdf-to-jpg">
+  <link rel="alternate" hreflang="x-default" href="https://velfile.my.id/tools/pdf-to-jpg">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="PDF to JPG: Velfile">
+  <meta property="og:description" content="Turn the pages of a PDF into JPG images. Runs in your browser.">
+  <meta property="og:url" content="https://velfile.my.id/tools/pdf-to-jpg">
+  <meta property="og:image" content="https://velfile.my.id/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" type="image/png" href="/favicon.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="../css/tool.css">
+
+  <style>
+    [hidden] { display: none !important; }
+
+    /* Kotak upload */
+    @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+    .dropzone { border: 2px dashed var(--line); border-radius: 6px; min-height: 240px; padding: 28px 18px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; cursor: pointer; transition: border-color 0.2s, background 0.2s, transform 0.2s; }
+    .dropzone:hover { border-color: var(--ink); }
+    .dropzone.dragging { border-color: var(--ink); border-style: solid; background: var(--yellow-soft); transform: scale(1.015); }
+    .dz-ico { width: 46px; height: 46px; margin-bottom: 14px; animation: bob 3s ease-in-out infinite; }
+    .dropzone.dragging .dz-ico { animation: none; transform: translateY(-8px) rotate(-5deg); }
+    .dropzone strong { font-size: 18px; }
+    .dropzone p { color: var(--muted); font-size: 14px; margin-bottom: 16px; }
+    .pick { background: var(--ink); color: #fff; padding: 10px 20px; border-radius: 6px; font-size: 14px; font-weight: 600; }
+    .limits { margin-top: 14px; font-size: 13px; color: var(--muted); }
+
+    /* Pesan */
+    .msg { margin-top: 14px; padding: 12px 14px; border-radius: 6px; font-size: 14px; font-weight: 500; animation: rise 0.3s ease both; }
+    .msg:empty { display: none; }
+    .msg.error { background: var(--err-bg); color: var(--err); border: 1px solid #e3b5b1; }
+    .msg.info { background: var(--yellow-soft); border: 1px solid var(--yellow); }
+
+    /* Info file */
+    .doc-row { display: flex; align-items: center; gap: 14px; padding-bottom: 14px; border-bottom: 2px solid var(--ink); }
+    .doc { flex: none; width: 42px; height: 50px; display: grid; place-items: end center; padding-bottom: 6px; border-radius: 3px; background: var(--ink); color: #fff; font: 800 11px/1 "Bricolage Grotesque", sans-serif; }
+    .doc-row .info { min-width: 0; }
+    .file-name { font-weight: 600; word-break: break-word; }
+    .file-meta { color: var(--muted); font-size: 13px; }
+
+    /* Pengaturan */
+    .field { margin-top: 24px; }
+    .field > label { display: block; font-weight: 600; font-size: 15px; margin-bottom: 8px; }
+    input[type="text"], select { width: 100%; font: inherit; font-size: 16px; padding: 12px; border: 2px solid var(--ink); border-radius: 8px; background: var(--paper); color: var(--ink); }
+    input[type="text"].bad { border-color: var(--err); }
+    .status { margin-top: 8px; font-size: 14px; color: var(--muted); min-height: 1.6em; }
+    .status.bad { color: var(--err); font-weight: 500; }
+    .status.good { color: var(--ok); font-weight: 500; }
+
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
+    .btn.primary { flex: 1 1 180px; text-align: center; }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn.busy:disabled { opacity: 0.6; cursor: wait; }
+
+    /* Hasil */
+    .results { margin-top: 24px; padding-top: 20px; border-top: 2px solid var(--ink); animation: rise 0.3s ease both; }
+    .results-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 14px; }
+    .results-head p { font-weight: 600; }
+    .pages { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+    .card { border: 1px solid var(--line); border-radius: 6px; background: var(--bg); padding: 8px; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+    .card img { width: 100%; height: 150px; object-fit: contain; background: #fff; border-radius: 3px; }
+    .card .meta { font-size: 13px; color: var(--muted); }
+    .card .btn { padding: 8px 10px; font-size: 13px; text-align: center; }
+  </style>
+  <meta name="twitter:image" content="https://velfile.my.id/og.png">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "PDF to JPG - Velfile",
+    "description": "Turn the pages of a PDF into JPG images. Runs in your browser.",
+    "url": "https://velfile.my.id/tools/pdf-to-jpg",
+    "applicationCategory": "UtilitiesApplication",
+    "operatingSystem": "Any (web browser)",
+    "inLanguage": "en",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Velfile",
+      "url": "https://velfile.my.id/"
+    }
+  }
+  </script>
+</head>
+<body>
+
+  <header>
+    <div class="wrap header-inner">
+      <a href="../index.html" class="brand" aria-label="Velfile home">
+        <svg viewBox="0 0 32 32" aria-hidden="true">
+          <path d="M6 3h15l6 6v20H6z" fill="#f6cf4a" stroke="#15181e" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M21 3v6h6" fill="#ffffff" stroke="#15181e" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M11 15l5 9 5-9" fill="none" stroke="#15181e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        velfile
+      </a>
+      <a href="../index.html#tools" class="back">All tools</a>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <section class="tool-head">
+      <h1 class="rise">PDF to JPG</h1>
+      <p class="rise" style="--d: 0.12s">Turn the pages of a PDF into JPG images.</p>
+    </section>
+
+    <section class="sheet rise" style="--d: 0.2s" id="workspace">
+
+      <!-- Tahap 1: pilih PDF -->
+      <div id="dropView">
+        <div class="dropzone" id="dropZone" role="button" tabindex="0" aria-label="Choose a PDF file or drop it here">
+          <svg class="dz-ico" viewBox="0 0 44 44" aria-hidden="true">
+            <path d="M10 4h17l8 8v28H10z" fill="#fff" stroke="#15181e" stroke-width="2.5" stroke-linejoin="round"/>
+            <path d="M27 4v8h8" fill="#f6cf4a" stroke="#15181e" stroke-width="2.5" stroke-linejoin="round"/>
+            <path d="M22 33V21m0 0-5 5m5-5 5 5" fill="none" stroke="#15181e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <strong>Drop a PDF here</strong>
+          <p>or pick one from your device</p>
+          <span class="pick">Choose PDF</span>
+        </div>
+        <div class="limits">PDF files only. Up to 100 MB.</div>
+      </div>
+
+      <!-- Tahap 2: atur dan ubah -->
+      <div id="workView" hidden>
+        <div class="doc-row">
+          <div class="doc">PDF</div>
+          <div class="info">
+            <div class="file-name" id="fileName"></div>
+            <div class="file-meta" id="fileMeta"></div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="rangeInput">Pages to convert</label>
+          <input type="text" id="rangeInput" autocomplete="off" spellcheck="false" placeholder="All pages. Or type 1-3, 5, 8-10">
+          <div class="status" id="rangeStatus"></div>
+        </div>
+
+        <div class="field">
+          <label for="quality">Image quality</label>
+          <select id="quality">
+            <option value="1.5">Small file</option>
+            <option value="2" selected>Standard</option>
+            <option value="3">High detail</option>
+          </select>
+        </div>
+
+        <div class="actions">
+          <button class="btn primary" id="convertBtn" type="button">Convert to JPG</button>
+          <button class="btn" id="resetBtn" type="button">Choose another PDF</button>
+        </div>
+
+        <div class="results" id="results" hidden>
+          <div class="results-head">
+            <p id="resultsText"></p>
+            <button class="btn primary" id="zipBtn" type="button" style="flex:none;">Download all (ZIP)</button>
+          </div>
+          <div class="pages" id="pages"></div>
+        </div>
+      </div>
+
+      <div class="msg" id="msg" role="status" aria-live="polite"></div>
+      <input type="file" id="fileInput" accept="application/pdf,.pdf" hidden>
+    </section>
+
+    <section class="guide">
+      <h2>How to turn a PDF into JPG images</h2>
+      <ol class="how">
+        <li>Choose a PDF.</li>
+        <li>Leave Pages empty for all pages, or type a range like 1-3, 5. Pick an image quality.</li>
+        <li>Press Convert to JPG, then download each page or all of them as a ZIP.</li>
+      </ol>
+
+      <h2>Common questions</h2>
+      <div class="qa">
+        <details><summary>How many pages can I convert at once?</summary><p>Up to 50 pages. For longer PDFs, convert one range at a time.</p></details>
+        <details><summary>Why won't my PDF open?</summary><p>A PDF locked with a password can't be read. Remove the password first.</p></details>
+        <details><summary>Is my file uploaded?</summary><p>No. The file is processed in your browser on your device and is not sent to a server.</p></details>
+      </div>
+
+      <h2>Related tools</h2>
+      <ul class="related">
+        <li><a href="split-pdf.html">Split PDF</a></li>
+        <li><a href="jpg-to-pdf.html">JPG to PDF</a></li>
+        <li><a href="compress.html">Compress Image</a></li>
+        <li><a href="compress-pdf.html">Compress PDF</a></li>
+      </ul>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="wrap footer-inner">
+      <span>File tools, without the fuss.</span>
+      <span style="display:flex;gap:20px;flex-wrap:wrap;"><a href="../about.html">About</a><a href="../privacy.html">Privacy</a><a href="../contact.html">Contact</a><a href="../id/tools/pdf-to-jpg.html">Bahasa Indonesia</a><a href="../index.html">velfile</a></span>
+    </div>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" integrity="sha384-/1qUCSGwTur9vjf/z9lmu/eCUYbpOTgSjmpbMQZ1/CtX2v/WcAIKqRv+U1DUCG6e" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" integrity="sha384-+mbV2IY1Zk/X1p/nWllGySJSUN8uMs+gUAN10Or95UBH0fpj6GfKgPmgC5EXieXG" crossorigin="anonymous"></script>
+  <script src="../js/handoff.js"></script>
+  <script>
+    const MAX_SIZE = 100 * 1024 * 1024;
+    const MAX_PAGES = 50;      // halaman per proses
+    const MAX_SIDE = 4000;     // sisi terpanjang gambar (piksel)
+    const WORKER_URL = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+
+    const $ = (id) => document.getElementById(id);
+    const dropView = $("dropView"), workView = $("workView");
+    const zone = $("dropZone"), input = $("fileInput"), msg = $("msg");
+    const rangeInput = $("rangeInput"), rangeStatus = $("rangeStatus");
+    const convertBtn = $("convertBtn"), results = $("results"), pagesBox = $("pages");
+
+    let current = null;      // { file, name, total, pdf }
+    let selected = null;     // nomor halaman yang dipilih (mulai dari 1)
+    let outputs = [];        // { n, blob, url }
+    let workerReady = false;
+
+    /* ---------- Pilih PDF ---------- */
+    zone.addEventListener("click", () => input.click());
+    zone.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); input.click(); }
+    });
+    input.addEventListener("change", () => {
+      const files = Array.from(input.files);
+      input.value = "";
+      pickFile(files);
+    });
+    zone.addEventListener("dragover", (e) => { e.preventDefault(); zone.classList.add("dragging"); });
+    zone.addEventListener("dragleave", () => zone.classList.remove("dragging"));
+    zone.addEventListener("drop", (e) => {
+      e.preventDefault();
+      zone.classList.remove("dragging");
+      pickFile(Array.from(e.dataTransfer.files));
+    });
+
+    function showMsg(text, kind) { msg.className = "msg " + (kind || "info"); msg.textContent = text; }
+    function clearMsg() { msg.className = "msg"; msg.textContent = ""; }
+    function isPdf(f) { return f.type === "application/pdf" || /\.pdf$/i.test(f.name); }
+
+    // Pekerja pdf.js dimuat lewat blob agar aman dari batasan lintas-situs
+    async function setupWorker() {
+      if (workerReady) return;
+      try {
+        const res = await fetch(WORKER_URL);
+        const code = await res.text();
+        pdfjsLib.GlobalWorkerOptions.workerSrc = URL.createObjectURL(new Blob([code], { type: "text/javascript" }));
+      } catch (e) {
+        pdfjsLib.GlobalWorkerOptions.workerSrc = WORKER_URL;
+      }
+      workerReady = true;
+    }
+
+    async function pickFile(files) {
+      if (!files.length) return;
+      if (!window.pdfjsLib) {
+        return showMsg("The PDF engine could not load. Check your connection and reload the page.", "error");
+      }
+      const file = files.find(isPdf);
+      if (!file) return showMsg("PDF to JPG works with PDF files.", "error");
+      if (file.size > MAX_SIZE) return showMsg(file.name + " is larger than 100 MB. Choose a smaller PDF.", "error");
+
+      showMsg("Reading your file...", "info");
+      try {
+        await setupWorker();
+        const data = new Uint8Array(await file.arrayBuffer());
+        const pdf = await pdfjsLib.getDocument({ data }).promise;
+        if (current) current.pdf.destroy();
+        current = { file, name: file.name.replace(/\.[^.]+$/, ""), total: pdf.numPages, pdf };
+      } catch (e) {
+        return showMsg(file.name + " is password protected or could not be read.", "error");
+      }
+
+      $("fileName").textContent = file.name;
+      $("fileMeta").textContent = current.total + (current.total === 1 ? " page, " : " pages, ") + formatBytes(file.size);
+      rangeInput.value = "";
+      clearOutputs();
+      validate();
+
+      dropView.hidden = true;
+      workView.hidden = false;
+      if (files.filter(isPdf).length > 1) showMsg("Only the first PDF was used.", "info"); else clearMsg();
+    }
+
+    $("resetBtn").addEventListener("click", () => {
+      if (current) { current.pdf.destroy(); current = null; }
+      selected = null;
+      clearOutputs();
+      workView.hidden = true;
+      dropView.hidden = false;
+      clearMsg();
+    });
+
+    function clearOutputs() {
+      outputs.forEach((o) => URL.revokeObjectURL(o.url));
+      outputs = [];
+      pagesBox.replaceChildren();
+      results.hidden = true;
+    }
+
+    /* ---------- Pilih halaman ---------- */
+    function parseRanges(text, total) {
+      const parts = text.split(",").map((s) => s.trim()).filter(Boolean);
+      if (!parts.length) return { pages: Array.from({ length: total }, (_, i) => i + 1) };
+
+      const out = [];
+      for (const p of parts) {
+        const m = p.match(/^(\d+)(?:\s*-\s*(\d+))?$/);
+        if (!m) return { error: '"' + p + '" is not a valid page or range.' };
+        const a = Number(m[1]);
+        const b = m[2] ? Number(m[2]) : a;
+        if (a < 1 || b < 1 || a > total || b > total) return { error: "Pages must be between 1 and " + total + "." };
+        if (a > b) return { error: '"' + p + '" goes backwards. Write it as ' + b + "-" + a + "." };
+        for (let i = a; i <= b; i++) out.push(i);
+      }
+      return { pages: out };
+    }
+
+    function validate() {
+      if (!current) return;
+      const res = parseRanges(rangeInput.value, current.total);
+      let error = res.error;
+      if (!error && res.pages.length > MAX_PAGES) error = "Up to " + MAX_PAGES + " pages at a time. Pick a smaller range.";
+
+      if (error) {
+        selected = null;
+        rangeInput.classList.add("bad");
+        rangeStatus.className = "status bad";
+        rangeStatus.textContent = error;
+      } else {
+        selected = res.pages;
+        rangeInput.classList.remove("bad");
+        rangeStatus.className = "status good";
+        rangeStatus.textContent = res.pages.length + (res.pages.length === 1 ? " page" : " pages") + " will be converted (of " + current.total + ").";
+      }
+      convertBtn.disabled = !selected;
+    }
+
+    rangeInput.addEventListener("input", () => { clearOutputs(); validate(); });
+    $("quality").addEventListener("change", clearOutputs);
+
+    /* ---------- Ubah ke JPG ---------- */
+    convertBtn.addEventListener("click", async () => {
+      if (!current || !selected) return;
+      convertBtn.disabled = true;
+      convertBtn.classList.add("busy");
+      clearOutputs();
+      clearMsg();
+
+      const wantScale = Number($("quality").value);
+      try {
+        for (let i = 0; i < selected.length; i++) {
+          convertBtn.textContent = "Converting " + (i + 1) + " of " + selected.length + "...";
+          const page = await current.pdf.getPage(selected[i]);
+
+          const base = page.getViewport({ scale: 1 });
+          const scale = Math.min(wantScale, MAX_SIDE / Math.max(base.width, base.height));
+          const viewport = page.getViewport({ scale });
+
+          const canvas = document.createElement("canvas");
+          canvas.width = Math.max(1, Math.floor(viewport.width));
+          canvas.height = Math.max(1, Math.floor(viewport.height));
+          const ctx = canvas.getContext("2d");
+          ctx.fillStyle = "#ffffff";
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          await page.render({ canvasContext: ctx, viewport }).promise;
+
+          const blob = await new Promise((r) => canvas.toBlob(r, "image/jpeg", 0.92));
+          canvas.width = canvas.height = 0;
+          if (!blob) throw new Error("encode failed");
+          outputs.push({ n: selected[i], blob, url: URL.createObjectURL(blob) });
+          page.cleanup();
+        }
+        renderResults();
+      } catch (err) {
+        clearOutputs();
+        showMsg("Something went wrong while converting. Try fewer pages or the Small file option.", "error");
+      } finally {
+        convertBtn.classList.remove("busy");
+        convertBtn.textContent = "Convert to JPG";
+        convertBtn.disabled = !selected;
+      }
+    });
+
+    function renderResults() {
+      const total = outputs.reduce((s, o) => s + o.blob.size, 0);
+      $("resultsText").textContent = outputs.length + (outputs.length === 1 ? " image" : " images") + " ready, " + formatBytes(total);
+      $("zipBtn").hidden = outputs.length < 2;
+
+      outputs.forEach((o) => {
+        const card = document.createElement("div");
+        card.className = "card";
+
+        const img = document.createElement("img");
+        img.src = o.url;
+        img.alt = "Page " + o.n;
+
+        const meta = document.createElement("div");
+        meta.className = "meta";
+        meta.textContent = "Page " + o.n + ", " + formatBytes(o.blob.size);
+
+        const a = document.createElement("a");
+        a.className = "btn";
+        a.href = o.url;
+        a.download = current.name + "-page-" + o.n + ".jpg";
+        a.textContent = "Download";
+
+        card.append(img, meta, a);
+        pagesBox.appendChild(card);
+      });
+      results.hidden = false;
+    }
+
+    $("zipBtn").addEventListener("click", async () => {
+      if (!window.JSZip) return showMsg("The ZIP engine could not load. Download the pages one by one instead.", "error");
+      const btn = $("zipBtn");
+      btn.disabled = true;
+      btn.textContent = "Preparing ZIP...";
+      try {
+        const zip = new JSZip();
+        outputs.forEach((o) => zip.file(current.name + "-page-" + o.n + ".jpg", o.blob));
+        const blob = await zip.generateAsync({ type: "blob" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = current.name + "-pages.zip";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 10000);
+      } catch (e) {
+        showMsg("Could not create the ZIP. Download the pages one by one instead.", "error");
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Download all (ZIP)";
+      }
+    });
+
+    function formatBytes(bytes) {
+      if (bytes === 0) return "0 B";
+      const units = ["B", "KB", "MB", "GB"];
+      const i = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1);
+      return parseFloat((bytes / Math.pow(1024, i)).toFixed(1)) + " " + units[i];
+    }
+
+    /* ---------- File kiriman dari halaman utama ---------- */
+    if (window.VelfileHandoff) {
+      VelfileHandoff.take().then((files) => {
+        if (files && files.length) pickFile(files);
+      });
+    }
+  </script>
+
+</body>
+</html>
